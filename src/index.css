@@ -1,24 +1,48 @@
-﻿:root {
-  --accent: #5b3a8a;
+:root {
   --font-serif: 'Newsreader', serif;
   --font-sans: 'Archivo', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Altura da navbar fixa — usada por scroll-margin e offsets de âncora */
+  --nav-h: 64px;
+
+  /* Largura confortável de leitura para texto corrido (~65-70 caracteres) */
+  --measure: 68ch;
 }
 
-[data-theme="light"], :root:not([data-theme="dark"]) {
+/*
+ * O accent é definido POR TEMA, não em :root.
+ * O roxo escuro (#5b3a8a) tem contraste 2.04:1 sobre o fundo escuro — reprova
+ * em WCAG AA. No dark usamos uma lavanda clara para texto/bordas e texto
+ * escuro sobre os preenchimentos sólidos.
+ */
+[data-theme='light'],
+:root:not([data-theme='dark']) {
   --bg: oklch(98% 0.002 285);
   --bg2: oklch(93% 0.004 285);
   --fg: oklch(16% 0.005 285);
   --muted: oklch(50% 0.006 285);
   --border: oklch(87% 0.006 285);
+
+  --accent: #5b3a8a;
+  --accent-solid: #5b3a8a;
+  --accent-contrast: #ffffff;
+
+  --ok: oklch(44% 0.15 150);
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --bg: oklch(15% 0.004 285);
   --bg2: oklch(21% 0.006 285);
   --fg: oklch(95% 0.004 285);
   --muted: oklch(65% 0.008 285);
   --border: oklch(30% 0.008 285);
+
+  --accent: oklch(80% 0.11 305);
+  --accent-solid: oklch(80% 0.11 305);
+  --accent-contrast: oklch(15% 0.004 285);
+
+  --ok: oklch(80% 0.16 150);
 }
 
 * {
@@ -27,7 +51,9 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  /* clip em vez de hidden: hidden cria um container de rolagem e quebra
+     o position:sticky da navbar. clip corta o overflow sem criar scroll. */
+  overflow-x: clip;
   width: 100%;
 }
 
@@ -37,19 +63,60 @@ body {
   background-color: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 #root {
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Âncoras não podem parar embaixo da navbar fixa */
+#hero-grid,
+#experiencia,
+#projetos,
+#sobre,
+#contato {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+
+/* Foco visível e consistente para navegação por teclado */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Limite de medida para blocos de texto corrido */
+.measure {
+  max-width: var(--measure);
+}
+
+/*
+ * Card em duas colunas: metadados à esquerda, conteúdo à direita.
+ * Resolve o problema de linhas de ~190 caracteres no desktop — a coluna
+ * de conteúdo é estreita o bastante para o texto respeitar a medida.
+ */
+.split-card {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .split-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 .bg-noise {
@@ -69,10 +136,29 @@ a {
 }
 
 /* ==========================================================================
+   Navbar fixa
+   ========================================================================== */
+#site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  background: color-mix(in oklch, var(--bg) 82%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+#site-nav[data-scrolled='true'] {
+  border-bottom-color: var(--border);
+}
+
+/* ==========================================================================
    Continuous Ambient Circuit Glow Animations
    ========================================================================== */
 @keyframes circuitBreathe {
-  0%, 100% {
+  0%,
+  100% {
     stroke-opacity: 0.2;
     filter: drop-shadow(0 0 1px var(--accent));
   }
@@ -87,7 +173,8 @@ a {
 }
 
 @keyframes circuitLineSolid {
-  0%, 100% {
+  0%,
+  100% {
     stroke-opacity: 0.55;
   }
   50% {
@@ -100,7 +187,8 @@ a {
 }
 
 @keyframes nodeBreathe {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(0.9);
     fill-opacity: 0.1;
   }
@@ -131,11 +219,11 @@ a {
   z-index: 9999;
 }
 
-[data-theme="dark"]::view-transition-old(root) {
+[data-theme='dark']::view-transition-old(root) {
   z-index: 9999;
 }
 
-[data-theme="dark"]::view-transition-new(root) {
+[data-theme='dark']::view-transition-new(root) {
   z-index: 1;
 }
 
@@ -200,14 +288,54 @@ a {
   animation-play-state: paused;
 }
 
+/* ==========================================================================
+   Respeito a prefers-reduced-motion
+   Anima o que é decorativo apenas para quem não pediu para parar.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* A esteira precisa parar de fato, não só ficar rápida.
+     Vira uma faixa de rolagem manual: mantém o layout compacto e
+     continua acessível, sem empilhar 16 chips e esticar o hero. */
+  .marquee-track {
+    animation: none !important;
+  }
+
+  .marquee-viewport {
+    overflow-x: auto !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+
+  /* A cópia só servia para o loop parecer contínuo */
+  .marquee-dup {
+    display: none !important;
+  }
+
+  .circuit-breathe,
+  .circuit-line-solid,
+  .node-breathe {
+    animation: none !important;
+    stroke-opacity: 0.4;
+    fill-opacity: 0.2;
+  }
+}
+
 /* Floating nav dock - Hidden on desktop (PC), visible on mobile/tablet */
 #floating-nav-dock {
   display: none !important;
-}
-
-/* Desktop Main Section Spacing */
-#experiencia {
-  padding-top: 80px;
 }
 
 /* Responsive styles */
@@ -215,7 +343,9 @@ a {
   #floating-nav-dock {
     display: flex !important;
   }
-  nav {
+  /* Escopo no #site-nav: o dock flutuante também é um <nav> e não pode
+     herdar estes paddings. */
+  #site-nav {
     justify-content: space-between !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
@@ -226,7 +356,7 @@ a {
   }
   #hero-grid {
     grid-template-columns: 1fr !important;
-    padding: 10px 20px 80px !important;
+    padding: 24px 20px 64px !important;
     gap: 18px !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -282,16 +412,15 @@ a {
     width: 100% !important;
     box-sizing: border-box !important;
   }
-  #experiencia {
-    margin-top: 36px !important;
-    padding-top: 60px !important;
-  }
   #contato {
     padding-left: 20px !important;
     padding-right: 20px !important;
     padding-bottom: 96px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+  }
+  #site-footer {
+    padding-bottom: 96px !important;
   }
   #projects-grid {
     grid-template-columns: 1fr !important;

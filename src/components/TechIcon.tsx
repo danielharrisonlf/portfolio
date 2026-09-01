@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
   SiTypescript,
   SiNodedotjs,
@@ -84,7 +84,7 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   }
   // React Native
   if (norm.includes('native')) {
-    return <TbBrandReactNative size={size + 1} color="#61DAFB" className={className} style={style} />;
+    return <TbBrandReactNative size={size + 1} className={className} style={style} />;
   }
   // React
   if (norm.includes('react')) {
@@ -116,7 +116,7 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   }
   // Express
   if (norm.includes('express')) {
-    return <SiExpress size={size} color="#9CA3AF" className={className} style={style} />;
+    return <SiExpress size={size} className={className} style={style} />;
   }
   // MySQL
   if (norm.includes('mysql')) {
@@ -126,23 +126,23 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   // --- AI, AGENTS & ECOSYSTEM ---
   // MCP / MCPs
   if (norm.includes('mcp')) {
-    return <TbCpu size={size} color="#38BDF8" className={className} style={style} />;
+    return <TbCpu size={size} className={className} style={style} />;
   }
   // Subagentes
   if (norm.includes('subagente')) {
-    return <TbHierarchy3 size={size} color="#EC4899" className={className} style={style} />;
+    return <TbHierarchy3 size={size} className={className} style={style} />;
   }
   // Hermes Agente
   if (norm.includes('hermes')) {
-    return <TbRobot size={size} color="#8B5CF6" className={className} style={style} />;
+    return <TbRobot size={size} className={className} style={style} />;
   }
   // Agentes / Agente
   if (norm.includes('agente')) {
-    return <TbRobot size={size} color="#A855F7" className={className} style={style} />;
+    return <TbRobot size={size} className={className} style={style} />;
   }
   // Skills / Tools
   if (norm.includes('skill')) {
-    return <TbWand size={size} color="#F59E0B" className={className} style={style} />;
+    return <TbWand size={size} className={className} style={style} />;
   }
   // Claude / Anthropic
   if (norm.includes('claude') || norm.includes('anthropic')) {
@@ -154,11 +154,11 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   }
   // Codex
   if (norm.includes('codex')) {
-    return <TbCode size={size} color="#38BDF8" className={className} style={style} />;
+    return <TbCode size={size} className={className} style={style} />;
   }
   // Kimi K3 / Kimi
   if (norm.includes('kimi')) {
-    return <TbBrain size={size} color="#6366F1" className={className} style={style} />;
+    return <TbBrain size={size} className={className} style={style} />;
   }
   // OpenCode
   if (norm.includes('opencode')) {
@@ -166,7 +166,7 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   }
   // Orca IA / Orca
   if (norm.includes('orca')) {
-    return <TbSparkles size={size} color="#06B6D4" className={className} style={style} />;
+    return <TbSparkles size={size} className={className} style={style} />;
   }
 
   // --- MESSAGING & MAPS APIS ---
@@ -193,7 +193,7 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   }
   // RTSP / Streaming
   if (norm.includes('rtsp') || norm.includes('stream') || norm.includes('vídeo')) {
-    return <TbBroadcast size={size} color="#A855F7" className={className} style={style} />;
+    return <TbBroadcast size={size} className={className} style={style} />;
   }
   // C++
   if (norm === 'c++' || norm.includes('c++')) {
@@ -205,7 +205,7 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   }
   // C
   if (norm === 'c') {
-    return <SiC size={size} color="#A8B9CC" className={className} style={style} />;
+    return <SiC size={size} className={className} style={style} />;
   }
   // Python
   if (norm.includes('python')) {
@@ -227,77 +227,82 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   // --- ARCHITECTURE & FOUNDATIONS ---
   // Arquitetura
   if (norm.includes('arquitetura') || norm.includes('architecture')) {
-    return <TbHierarchy2 size={size} color="#A78BFA" className={className} style={style} />;
+    return <TbHierarchy2 size={size} className={className} style={style} />;
   }
   // DDD
   if (norm.includes('ddd') || norm.includes('domain')) {
-    return <TbLayersIntersect size={size} color="#EC4899" className={className} style={style} />;
+    return <TbLayersIntersect size={size} className={className} style={style} />;
   }
   // Design Patterns
   if (norm.includes('pattern') || norm.includes('design pattern')) {
-    return <TbPuzzle size={size} color="#06B6D4" className={className} style={style} />;
+    return <TbPuzzle size={size} className={className} style={style} />;
   }
   // POO / OOP
   if (norm.includes('poo') || norm.includes('orientada a objetos')) {
-    return <TbCode size={size} color="#38BDF8" className={className} style={style} />;
+    return <TbCode size={size} className={className} style={style} />;
   }
   // System Design
   if (norm.includes('system design')) {
-    return <TbCpu size={size} color="#38BDF8" className={className} style={style} />;
+    return <TbCpu size={size} className={className} style={style} />;
   }
   // Integrações
   if (norm.includes('integraç') || norm.includes('integrac')) {
-    return <TbPlugConnected size={size} color="#34D399" className={className} style={style} />;
+    return <TbPlugConnected size={size} className={className} style={style} />;
   }
   // Webhooks
   if (norm.includes('webhook')) {
-    return <TbWebhook size={size} color="#FBBF24" className={className} style={style} />;
+    return <TbWebhook size={size} className={className} style={style} />;
   }
   // Websockets
   if (norm.includes('websocket')) {
-    return <TbArrowsExchange size={size} color="#F43F5E" className={className} style={style} />;
+    return <TbArrowsExchange size={size} className={className} style={style} />;
   }
   // Microsserviços
   if (norm.includes('microsservi') || norm.includes('microservice')) {
-    return <TbBoxMultiple size={size} color="#60A5FA" className={className} style={style} />;
+    return <TbBoxMultiple size={size} className={className} style={style} />;
   }
   // Banco de Dados
   if (norm.includes('banco de dados') || norm.includes('database')) {
-    return <TbDatabase size={size} color="#3B82F6" className={className} style={style} />;
+    return <TbDatabase size={size} className={className} style={style} />;
   }
   // Engenharia de Software
   if (norm.includes('engenharia de software')) {
-    return <TbCodeDots size={size} color="#10B981" className={className} style={style} />;
+    return <TbCodeDots size={size} className={className} style={style} />;
   }
   // Redes
   if (norm.includes('redes')) {
-    return <TbNetwork size={size} color="#6366F1" className={className} style={style} />;
+    return <TbNetwork size={size} className={className} style={style} />;
   }
   // Sistemas Operacionais
-  if (norm.includes('sistemas operacionais') || norm.includes('so')) {
-    return <TbTerminal2 size={size} color="#8B5CF6" className={className} style={style} />;
+  if (norm.includes('sistemas operacionais') || norm === 'so') {
+    return <TbTerminal2 size={size} className={className} style={style} />;
   }
   // Cálculo
   if (norm.includes('cálculo') || norm.includes('calculo')) {
-    return <TbMathFunction size={size} color="#EC4899" className={className} style={style} />;
+    return <TbMathFunction size={size} className={className} style={style} />;
   }
   // Física
   if (norm.includes('física') || norm.includes('fisica')) {
-    return <TbAtom size={size} color="#06B6D4" className={className} style={style} />;
+    return <TbAtom size={size} className={className} style={style} />;
   }
   // Eletrônica
   if (norm.includes('eletrônica') || norm.includes('eletronica')) {
-    return <TbCircuitResistor size={size} color="#F59E0B" className={className} style={style} />;
+    return <TbCircuitResistor size={size} className={className} style={style} />;
   }
   // Projetos de Engenharia
   if (norm.includes('projetos de engenharia')) {
-    return <TbCompass size={size} color="#8B5CF6" className={className} style={style} />;
+    return <TbCompass size={size} className={className} style={style} />;
   }
   // Visão Computacional
   if (norm.includes('visão') || norm.includes('visao')) {
-    return <TbEye size={size} color="#10B981" className={className} style={style} />;
+    return <TbEye size={size} className={className} style={style} />;
   }
 
-  // Default code icon
-  return <TbCode size={size} color="var(--muted)" className={className} style={style} />;
+  // SDD / spec-driven development
+  if (norm === 'sdd' || norm.includes('spec-driven')) {
+    return <TbCodeDots size={size} className={className} style={style} />;
+  }
+
+  // Default — herda a cor do chip, como os demais ícones genéricos
+  return <TbCode size={size} className={className} style={style} />;
 };

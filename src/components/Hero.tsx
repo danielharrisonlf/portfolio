@@ -1,4 +1,4 @@
-﻿import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StackItem } from '../types';
 import { personalInfo } from '../data/portfolioData';
 import { useHeroGraph } from '../hooks/useHeroGraph';
@@ -67,8 +67,13 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
     ? 'linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.35) 100%)'
     : 'linear-gradient(155deg, color-mix(in oklch, var(--accent) 35%, transparent) 0%, transparent 55%, rgba(0,0,0,0.4) 100%)';
 
-  // Duplicated array for seamless infinite marquee loop
-  const practicesMarquee = [...practices, ...practices];
+  // A duplicata existe só para o loop da esteira parecer contínuo.
+  // `isDuplicate` marca a segunda metade: ela é aria-hidden (o leitor de
+  // tela lia a lista inteira duas vezes) e some sob prefers-reduced-motion.
+  const practicesMarquee = [
+    ...practices.map((label) => ({ label, isDuplicate: false })),
+    ...practices.map((label) => ({ label, isDuplicate: true })),
+  ];
 
   return (
     <div
@@ -85,9 +90,12 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
         width: '100%',
         boxSizing: 'border-box',
         margin: '0 auto',
-        padding: '48px 64px 96px',
-        minHeight: 'calc(100vh - 80px)',
-        alignContent: 'center',
+        padding: '56px 64px 88px',
+        /*
+         * Sem min-height de viewport: o conteúdo ocupava ~500px dentro de um
+         * bloco de ~1100px, deixando uma faixa morta embaixo que lia como
+         * conteúdo faltando. A altura agora acompanha o conteúdo.
+         */
         alignItems: 'center',
         minWidth: 0,
       }}
@@ -133,7 +141,10 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
             <img
               id="hero-photo"
               src={personalInfo.photoUrl}
-              alt={personalInfo.name}
+              alt={`Foto de ${personalInfo.name}`}
+              width={360}
+              height={360}
+              decoding="async"
               style={photoFilterStyle}
               onError={(e) => {
                 const target = e.currentTarget;
@@ -243,6 +254,7 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
         >
           <p
             id="bio-full"
+            className="measure"
             style={{
               fontSize: '15px',
               lineHeight: 1.75,
@@ -256,6 +268,7 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
 
           <p
             id="bio-short"
+            className="measure"
             style={{
               display: 'none',
               fontSize: '15px',
@@ -424,6 +437,7 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
 
           {/* Esteira contínua com fade lateral */}
           <div
+            className="marquee-viewport"
             style={{
               position: 'relative',
               overflow: 'hidden',
@@ -437,7 +451,9 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
             <div className="marquee-track">
               {practicesMarquee.map((item, idx) => (
                 <span
-                  key={`${item}-${idx}`}
+                  key={`${item.label}-${idx}`}
+                  className={item.isDuplicate ? 'marquee-dup' : undefined}
+                  aria-hidden={item.isDuplicate || undefined}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -464,8 +480,8 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  <TechIcon name={item} size={15} />
-                  <span>{item}</span>
+                  <TechIcon name={item.label} size={15} />
+                  <span>{item.label}</span>
                 </span>
               ))}
             </div>

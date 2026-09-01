@@ -8,6 +8,7 @@ import { ExperienceSection } from './components/ExperienceSection';
 import { ProjectsSection } from './components/ProjectsSection';
 import { EducationSection } from './components/EducationSection';
 import { ContactSection } from './components/ContactSection';
+import { Footer } from './components/Footer';
 import { FloatingNav } from './components/FloatingNav';
 import {
   navItems,
@@ -20,7 +21,9 @@ import {
 } from './data/portfolioData';
 
 export const App: React.FC = () => {
-  const { theme, toggleTheme, isDark } = useTheme('light');
+  // O atributo data-theme vive só no <html> (escrito por useTheme).
+  // Antes ele era duplicado aqui numa div, e o de dentro vencia a cascata.
+  const { toggleTheme, isDark } = useTheme('light');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
@@ -28,7 +31,6 @@ export const App: React.FC = () => {
 
   return (
     <div
-      data-theme={theme}
       className="bg-noise"
       style={{
         backgroundColor: 'var(--bg)',
@@ -43,7 +45,7 @@ export const App: React.FC = () => {
       <ScrollProgressBar />
 
       {/* Floating Glassmorphic Quick Nav Dock */}
-      <FloatingNav />
+      <FloatingNav navItems={navItems} isMenuOpen={mobileMenuOpen} />
 
       {/* Top Navigation */}
       <Navbar
@@ -79,10 +81,12 @@ export const App: React.FC = () => {
 
         {/* Education Section */}
         <EducationSection education={education} />
+
+        {/* Contact — é alvo da navegação, então mora dentro do <main> */}
+        <ContactSection />
       </main>
 
-      {/* Contact & Footer */}
-      <ContactSection />
+      <Footer />
     </div>
   );
 };

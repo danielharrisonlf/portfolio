@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { personalInfo } from '../data/portfolioData';
 import { SiGmail } from 'react-icons/si';
 import { FaLinkedin, FaGithub } from 'react-icons/fa6';
@@ -17,11 +17,14 @@ export const ContactSection: React.FC = () => {
   };
 
   return (
-    <div
+    <section
       id="contato"
+      aria-labelledby="contato-heading"
       style={{
         borderTop: '1px solid var(--border)',
-        padding: '64px 56px',
+        maxWidth: '1080px',
+        margin: '0 auto',
+        padding: '72px 56px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -32,6 +35,7 @@ export const ContactSection: React.FC = () => {
       }}
     >
       <h2
+        id="contato-heading"
         style={{
           fontFamily: "'Newsreader', serif",
           fontWeight: 500,
@@ -88,7 +92,7 @@ export const ContactSection: React.FC = () => {
               style={{
                 fontSize: '11px',
                 fontFamily: "'IBM Plex Mono', monospace",
-                color: '#22c55e',
+                color: 'var(--ok)',
               }}
             >
               (Copiado!)
@@ -142,6 +146,6 @@ export const ContactSection: React.FC = () => {
           <span>GitHub ↗</span>
         </a>
       </div>
-    </div>
+    </section>
   );
 };

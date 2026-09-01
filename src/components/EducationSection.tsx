@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { EducationItem } from '../types';
 import { useIntersectionReveal } from '../hooks/useIntersectionReveal';
 import { TechIcon } from './TechIcon';
@@ -8,19 +8,20 @@ interface EducationSectionProps {
 }
 
 export const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
-  const [sectionRef, isRevealed] = useIntersectionReveal<HTMLDivElement>(0.12);
+  const [sectionRef, isRevealed] = useIntersectionReveal<HTMLElement>(0.12);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [hoveredSubject, setHoveredSubject] = useState<string | null>(null);
 
   return (
-    <div
+    <section
       id="sobre"
       ref={sectionRef}
+      aria-labelledby="edu-heading"
       style={{
         borderTop: '1px solid var(--border)',
-        maxWidth: '1400px',
+        maxWidth: '1080px',
         margin: '0 auto',
-        padding: '64px 56px 80px',
+        padding: '72px 56px',
         opacity: isRevealed ? 1 : 0,
         transform: `translateY(${isRevealed ? 0 : 24}px)`,
         transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
@@ -32,9 +33,9 @@ export const EducationSection: React.FC<EducationSectionProps> = ({ education })
         id="edu-heading"
         style={{
           fontFamily: "'Newsreader', serif",
-          fontWeight: 600,
-          fontSize: '38px',
-          margin: '0 0 36px',
+          fontWeight: 500,
+          fontSize: '32px',
+          margin: '0 0 32px',
         }}
       >
         Formação Acadêmica
@@ -45,7 +46,7 @@ export const EducationSection: React.FC<EducationSectionProps> = ({ education })
           const isCardHovered = hoveredCard === idx;
 
           return (
-            <div
+            <article
               key={`${edu.school}-${idx}`}
               onMouseEnter={() => setHoveredCard(idx)}
               onMouseLeave={() => setHoveredCard(null)}
@@ -70,15 +71,16 @@ export const EducationSection: React.FC<EducationSectionProps> = ({ education })
                   marginBottom: '6px',
                 }}
               >
-                <div
+                <h3
                   style={{
                     fontFamily: "'Newsreader', serif",
                     fontSize: '20px',
                     fontWeight: 600,
+                    margin: 0,
                   }}
                 >
                   {edu.course}
-                </div>
+                </h3>
 
                 <div style={{ fontSize: '13px', color: 'var(--accent)' }}>
                   @ {edu.school}
@@ -89,8 +91,16 @@ export const EducationSection: React.FC<EducationSectionProps> = ({ education })
                     fontFamily: "'IBM Plex Mono', monospace",
                     fontSize: '10px',
                     letterSpacing: '0.5px',
-                    color: '#22c55e',
-                    border: '1px solid color-mix(in oklch, #22c55e 40%, transparent)',
+                    color: edu.statusKind === 'active' ? 'var(--ok)' : 'var(--muted)',
+                    border: `1px solid ${
+                      edu.statusKind === 'active'
+                        ? 'color-mix(in oklch, var(--ok) 45%, transparent)'
+                        : 'var(--border)'
+                    }`,
+                    background:
+                      edu.statusKind === 'active'
+                        ? 'color-mix(in oklch, var(--ok) 10%, transparent)'
+                        : 'transparent',
                     borderRadius: '4px',
                     padding: '3px 8px',
                   }}
@@ -111,6 +121,7 @@ export const EducationSection: React.FC<EducationSectionProps> = ({ education })
               </div>
 
               <p
+                className="measure"
                 style={{
                   fontSize: '14px',
                   lineHeight: 1.6,
@@ -164,10 +175,10 @@ export const EducationSection: React.FC<EducationSectionProps> = ({ education })
                   );
                 })}
               </div>
-            </div>
+            </article>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 };

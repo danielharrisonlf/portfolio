@@ -28,12 +28,24 @@ export interface ProjectItem {
   stack: string;
   image?: string;
   link?: string;
+  /** Link do repositório. Vazio/ausente = botão não é renderizado. */
+  repoUrl?: string;
+  /** Link da demo ao vivo. Vazio/ausente = botão não é renderizado. */
+  demoUrl?: string;
 }
+
+/**
+ * `active` = em curso (verde), `past` = encerrado/transferido (neutro).
+ * Sem isso, "EM ANDAMENTO" e "TRANSFERIDO" saíam no mesmo verde, dando
+ * o mesmo peso visual a significados opostos.
+ */
+export type EducationStatusKind = 'active' | 'past';
 
 export interface EducationItem {
   course: string;
   school: string;
   status: string;
+  statusKind: EducationStatusKind;
   period: string;
   desc: string;
   subjects: string[];

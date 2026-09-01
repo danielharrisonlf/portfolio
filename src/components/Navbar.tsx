@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { NavItem } from '../types';
 import { ThemeToggle } from './ThemeToggle';
 import { FaGithub, FaLinkedin } from 'react-icons/fa6';
@@ -25,7 +25,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [navHighlight, setNavHighlight] = useState<{ left: number; width: number } | null>(null);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const navWrapRef = useRef<HTMLDivElement | null>(null);
+
+  // A borda inferior só aparece depois que a página sai do topo, para a nav
+  // não desenhar uma linha sobre o hero sem necessidade.
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleNavEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!navWrapRef.current) return;
@@ -51,8 +61,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <nav
+      id="site-nav"
+      data-scrolled={isScrolled}
+      aria-label="Navegação principal"
       style={{
-        position: 'relative',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -246,8 +258,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           href={cvUrl}
           download
           style={{
-            background: 'var(--accent)',
-            color: '#fff',
+            background: 'var(--accent-solid)',
+            color: 'var(--accent-contrast)',
             padding: '7px 15px',
             borderRadius: '4px',
             fontSize: '12px',

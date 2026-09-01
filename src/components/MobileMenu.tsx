@@ -1,6 +1,7 @@
-﻿import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavItem } from '../types';
 import { FaGithub, FaLinkedin } from 'react-icons/fa6';
+import { smoothScrollToElement } from '../utils/smoothScroll';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -11,6 +12,10 @@ interface MobileMenuProps {
   cvUrl: string;
 }
 
+/** Seletor dos elementos que podem receber foco dentro do painel. */
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,
   onClose,
@@ -19,19 +24,87 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   linkedinUrl,
   cvUrl,
 }) => {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+  // Guarda quem tinha o foco antes de abrir, para devolver ao fechar.
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
+
+  // Trava a rolagem do fundo enquanto o menu está aberto.
+  // Sem isso a página rolava atrás do overlay.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    const previousPaddingRight = body.style.paddingRight;
+
+    // Compensa o sumiço da scrollbar para o layout não "pular".
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) {
+      body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    return () => {
+      body.style.overflow = previousOverflow;
+      body.style.paddingRight = previousPaddingRight;
+    };
+  }, [isOpen]);
+
+  // ESC fecha, Tab circula dentro do painel (focus trap) e o foco
+  // volta para o botão que abriu o menu. O componente declara
+  // role="dialog" aria-modal="true" — precisa se comportar como um.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    lastFocusedRef.current = document.activeElement as HTMLElement | null;
+    closeBtnRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key !== 'Tab' || !panelRef.current) return;
+
+      const focusables = Array.from(
+        panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)
+      ).filter((el) => el.offsetParent !== null);
+
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      lastFocusedRef.current?.focus?.();
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     onClose();
     if (href.startsWith('#')) {
-      const targetId = href.substring(1);
-      const el = document.getElementById(targetId);
-      if (el) {
-        const yOffset = -24;
-        const y = el.getBoundingClientRect().top + window.scrollY + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
+      // Espera o menu desmontar e a trava de rolagem sair antes de rolar.
+      requestAnimationFrame(() => {
+        smoothScrollToElement(href.substring(1), -80, 700);
+      });
     }
   };
 
@@ -46,14 +119,15 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           background: 'rgba(0, 0, 0, 0.45)',
           backdropFilter: 'blur(2px)',
           WebkitBackdropFilter: 'blur(2px)',
-          zIndex: 199,
+          zIndex: 1099,
           animation: 'menuOverlayIn 0.2s ease-out both',
         }}
         aria-hidden="true"
       />
 
-      {/* Menu Panel */}
+      {/* Menu Panel — acima do dock flutuante (z-index 900) */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Menu de Navegação"
@@ -63,11 +137,13 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           left: 0,
           right: 0,
           background: 'var(--bg2)',
-          zIndex: 200,
+          zIndex: 1100,
           display: 'flex',
           flexDirection: 'column',
           animation: 'menuPanelIn 0.28s ease-out both',
           boxShadow: '0 20px 40px -20px rgba(0,0,0,0.4)',
+          maxHeight: '100dvh',
+          overflowY: 'auto',
         }}
       >
         <div
@@ -89,6 +165,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             MENU
           </span>
           <button
+            ref={closeBtnRef}
             onClick={onClose}
             aria-label="Fechar menu"
             style={{
@@ -148,6 +225,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             borderTop: '1px solid var(--border)',
+            marginTop: '24px',
           }}
         >
           <a
@@ -191,6 +269,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           </a>
         </div>
 
+        {/* CTA principal — usa a cor da marca, não o inverso neutro */}
         <a
           href={cvUrl}
           download
@@ -198,15 +277,15 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'var(--fg)',
-            color: 'var(--bg)',
+            background: 'var(--accent-solid)',
+            color: 'var(--accent-contrast)',
             padding: '20px 24px',
             fontSize: '15px',
             fontWeight: 600,
           }}
         >
-          <span>Currículo</span>
-          <span>↓</span>
+          <span>Baixar currículo</span>
+          <span aria-hidden="true">↓</span>
         </a>
       </div>
     </>

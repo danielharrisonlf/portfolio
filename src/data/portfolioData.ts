@@ -1,4 +1,4 @@
-﻿import {
+import {
   NavItem,
   StackItem,
   ExperienceItem,
@@ -6,11 +6,16 @@
   EducationItem,
 } from '../types';
 
+/**
+ * Fonte única da navegação. A navbar, o menu mobile e o dock flutuante
+ * consomem esta mesma lista para não divergirem entre si.
+ * (O dock adiciona "Início" na frente, já que é um atalho de rolagem.)
+ */
 export const navItems: NavItem[] = [
   { label: 'Experiência', href: '#experiencia', delayMs: 0, num: '01' },
   { label: 'Projetos', href: '#projetos', delayMs: 60, num: '02' },
   { label: 'Formação', href: '#sobre', delayMs: 120, num: '03' },
-  { label: 'Blog', href: '#', delayMs: 180, num: '04' },
+  { label: 'Contato', href: '#contato', delayMs: 180, num: '04' },
 ];
 
 export const stackItems: StackItem[] = [
@@ -25,29 +30,29 @@ export const stackItems: StackItem[] = [
   { label: 'Docker', color: '#2496ED' },
 ];
 
+/**
+ * Competências e integrações — não produtos que eu uso.
+ * Nomes de ferramentas de IA (Claude, OpenAI, Codex, etc.) foram removidos
+ * de propósito: listar produto como se fosse skill dilui os itens que são
+ * competência de verdade. A ferramenta aparece no contexto do projeto.
+ */
 export const practices: string[] = [
-  'MCPs',
-  'Agentes de IA',
-  'Subagentes',
-  'Skills & Tools',
-  'Claude',
-  'OpenAI',
-  'Codex',
-  'Kimi K3',
-  'OpenCode',
-  'Orca IA',
-  'Hermes Agente',
-  'WhatsApp API',
-  'Telegram API',
-  'Mapbox',
   'Arquitetura',
+  'System Design',
   'DDD',
   'Design Patterns',
-  'System Design',
   'Microsserviços',
   'Webhooks',
   'Websockets',
   'Integrações',
+  'Agentes de IA',
+  'MCPs',
+  'Subagentes',
+  'Skills & Tools',
+  'SDD',
+  'WhatsApp API',
+  'Telegram API',
+  'Mapbox',
 ];
 
 export const experiences: ExperienceItem[] = [
@@ -90,20 +95,33 @@ export const experiences: ExperienceItem[] = [
   },
 ];
 
+/**
+ * TODO (Daniel): preencher `repoUrl` e/ou `demoUrl` nos dois projetos.
+ * Projeto sem link é alegação, não prova — é a primeira coisa que um
+ * recrutador técnico tenta clicar. Os campos já são renderizados quando
+ * preenchidos; deixei vazios porque não invento URL.
+ *
+ * TODO (Daniel): `proj-0` estava usando um print DESTE portfólio como
+ * imagem do projeto. Removi. Coloque um screenshot real da conversa no
+ * Telegram (é o que vende o produto) em /uploads e aponte `image` aqui.
+ */
 export const projects: ProjectItem[] = [
   {
     id: 'proj-0',
     name: 'Gestor financeiro pessoal com IA',
     desc: 'Controle de gastos integrado ao Telegram: um agente de IA registra e categoriza transações a partir de mensagens de texto, sem exigir que o usuário abra um app. Prioriza fricção baixa sobre relatórios completos.',
     stack: 'NestJS · Telegram Bot API · PostgreSQL · Claude',
-    image: '/uploads/pasted-1788207921996-0.png',
+    repoUrl: '',
+    demoUrl: '',
   },
   {
     id: 'proj-1',
     name: 'Observabilidade para agentes de IA',
     desc: 'Dashboard de custo, latência e tracing de chamadas MCP, pensado para times que rodam agentes em produção e precisam justificar gasto de token e diagnosticar falhas rapidamente.',
     stack: 'Node.js · OpenTelemetry · Grafana',
-    image: '/uploads/pasted-1788216537633-0.png',
+    image: '/uploads/observabilidade.webp',
+    repoUrl: '',
+    demoUrl: '',
   },
 ];
 
@@ -112,6 +130,7 @@ export const education: EducationItem[] = [
     course: 'Ciência da Computação',
     school: 'Universidade da Amazônia (UNAMA)',
     status: 'EM ANDAMENTO',
+    statusKind: 'active',
     period: '2025 — atual · 4º Semestre',
     desc: 'Foco no desenvolvimento de software, arquitetura de sistemas, algoritmos e engenharia de dados.',
     subjects: [
@@ -128,6 +147,7 @@ export const education: EducationItem[] = [
     course: 'Engenharia da Computação',
     school: 'Universidade Federal do Pará (UFPA)',
     status: 'TRANSFERIDO',
+    statusKind: 'past',
     period: '2023.2 — 2025 · Transferência para UNAMA',
     desc: 'Formação com base rigorosa em ciências exatas, eletrônica, métodos quantitativos e projetos de engenharia.',
     subjects: [
@@ -149,7 +169,9 @@ export const personalInfo = {
     'Desenvolvedor Full Stack com 3 anos de experiência, focado em arquitetura, infraestrutura e produtos com IA (agentes, MCP, SDD).',
   fullBio:
     'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir coisas e atuar de forma ativa na criação do produto, não só entregar tarefas. Tenho experiência em todo o ciclo de desenvolvimento: arquitetura, infraestrutura, desenvolvimento e manutenção. Estou imerso em desenvolvimento com IA: agentes, subagentes, criação de skills, MCP e SDD (spec-driven development).',
-  photoUrl: '/uploads/backback-5e774fbf.png',
+  photoUrl: '/uploads/backback.webp',
+  // Fallback real para navegadores sem WebP (antes apontava para um
+  // arquivo byte a byte idêntico ao principal, então nunca serviu de nada).
   fallbackPhotoUrl: '/uploads/backback.png',
   cvUrl: '/cv/Daniel-Harrison-CV.pdf',
   email: 'daniel.harrisonlf@gmail.com',
