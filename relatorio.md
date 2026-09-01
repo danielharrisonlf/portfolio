@@ -441,6 +441,47 @@ ocupa) e que o item ativo no fim da página é "CONTATO".
 
 ---
 
+## Rodada 4 — stack em 3 colunas no mobile
+
+O dock estava cobrindo o card "Arquitetura & Práticas" no mobile. Causa: o grid da
+stack tinha caído para 2 colunas (5 linhas), empurrando a esteira para debaixo da
+barra.
+
+Voltou para **3 colunas fixas em todas as larguras**. O motivo de eu ter mudado
+para 2 na rodada 2 era transbordo de texto — resolvido agora medindo os rótulos
+reais e dimensionando o chip, em vez de reduzir as colunas.
+
+**Larguras reais (canvas `measureText`, fonte Archivo 500):**
+
+| Rótulo | 12.5px | 10.5px |
+|---|---|---|
+| React Native | 71.9px | **60.4px** |
+| PostgreSQL | 69.2px | 58.2px |
+| TypeScript | 61.2px | 51.4px |
+
+Abaixo de 480px o chip encolhe (fonte 10.5px, padding 7/8px, ícone 13px, gap 5px)
+e o card passa a ter 14px de padding lateral com gap de 8px no grid. Sobram ~68px
+de texto por chip a 390px, contra os 60.4px necessários — cabe com folga.
+
+Abaixo de 370px não existe largura física para três colunas legíveis, e aí sim o
+grid cai para 2.
+
+**Efeito medido a 390px:**
+
+| | Antes | Depois |
+|---|---|---|
+| Colunas × linhas | 2 × 5 | **3 × 3** |
+| Altura do card da stack | 209px | **135px** |
+| Base do card de práticas | — | 706px |
+| Topo do dock | 772px | 772px |
+| Sobreposição | **o dock cobria a esteira** | **66px de folga** |
+
+Verificado em 320 / 360 / 375 / 390 / 414 / 480px: nenhum rótulo cortado, nenhum
+overflow horizontal. Adicionei também 96px de `padding-bottom` no hero em mobile,
+para a barra não encostar no card mesmo em telas mais baixas.
+
+---
+
 ## Débito técnico que ficou
 
 Não mexi por ser refatoração grande e fora do escopo de uma revisão visual:

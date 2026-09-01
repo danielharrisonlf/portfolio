@@ -361,11 +361,12 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
             style={{
               display: 'grid',
               /*
-               * 3 colunas fixas eram estreitas demais no mobile: rótulos como
-               * "React Native" e "PostgreSQL" transbordavam o chip. auto-fit dá
-               * 3 colunas no desktop e cai para 2 (ou 1) quando não cabe.
+               * 3 colunas em todas as larguras. Para o rótulo mais longo
+               * ("React Native", 60.4px a 10.5px) caber no mobile, o chip
+               * encolhe via CSS abaixo de 480px; abaixo de 370px não há
+               * largura física para 3 colunas e caímos para 2.
                */
-              gridTemplateColumns: 'repeat(auto-fit, minmax(128px, 1fr))',
+              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
               gap: '10px',
             }}
           >
@@ -374,6 +375,7 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
               return (
                 <span
                   key={item.label}
+                  className="stack-chip"
                   onMouseEnter={() => setHoveredStack(item.label)}
                   onMouseLeave={() => setHoveredStack(null)}
                   style={{

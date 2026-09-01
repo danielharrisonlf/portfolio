@@ -452,6 +452,42 @@ button:focus-visible {
   #bio-short {
     display: block !important;
   }
+
+  /* Folga extra no fim do hero para o dock não encostar no card de práticas */
+  #hero-grid {
+    padding-bottom: 96px !important;
+  }
+}
+
+/*
+ * Stack em 3 colunas também no mobile.
+ * Larguras medidas com o texto real: "React Native" ocupa 60.4px a 10.5px.
+ * Com card 14px, gap 8px e chip de 8px de padding + ícone de 13px, sobram
+ * ~68px por chip a 390px — cabe com folga. Abaixo de 370px não há largura
+ * física para três, e o grid cai para duas colunas.
+ */
+@media (max-width: 480px) {
+  #hero-stack-card {
+    padding: 16px 14px !important;
+  }
+  #stack-chips-grid {
+    gap: 8px !important;
+  }
+  .stack-chip {
+    font-size: 10.5px !important;
+    padding: 7px 8px !important;
+    gap: 5px !important;
+  }
+  .stack-chip svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+}
+
+@media (max-width: 370px) {
+  #stack-chips-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }
 
 @media (max-width: 480px) {
