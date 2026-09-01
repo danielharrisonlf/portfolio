@@ -173,9 +173,9 @@ export const personalInfo = {
    * de áreas e perdia o "gosto de construir", que é o que diferencia.
    */
   shortBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência, hoje focado em IA aplicada. Gosto de construir e de entrar na decisão do produto — atuo em todas as fases do ciclo, de arquitetura a manutenção.',
+    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto, atuando em arquitetura, infraestrutura e desenvolvimento. Hoje construo agentes de IA que rodam em produção.',
   fullBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência, hoje focado em IA aplicada. Gosto de construir e de entrar na decisão do produto, não só na execução — atuo em todas as fases do ciclo: arquitetura, infraestrutura, desenvolvimento e manutenção. Na prática, isso tem sido agentes, subagentes, MCP e desenvolvimento guiado por especificação (SDD).',
+    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto. Atuo em todas as fases do ciclo: arquitetura, infraestrutura e desenvolvimento. Hoje construo agentes de IA que rodam em produção, com MCP e especificação antes do código.',
   photoUrl: '/uploads/backback.webp',
   // Fallback real para navegadores sem WebP (antes apontava para um
   // arquivo byte a byte idêntico ao principal, então nunca serviu de nada).
