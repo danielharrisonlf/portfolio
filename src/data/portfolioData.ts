@@ -63,7 +63,7 @@ export const experiences: ExperienceItem[] = [
     context:
       'Encibra é uma consultoria de engenharia com mais de 55 anos de atuação, com projetos em saneamento, transporte, energia e edificações. Desenvolvemos soluções de software para esse ramo.',
     bullets: [
-      'Arquitetei um microserviço de notificações multicanal (WhatsApp, Telegram, e-mail, Discord) via AWS SQS, reduzindo em mais de 90% as falhas de entrega e eliminando duplicidade de disparos mesmo em picos de reprocessamento.',
+      'Atuei em um microserviço de notificações multicanal (WhatsApp, Telegram, e-mail, Discord) sobre AWS SQS, responsável pelas integrações de WhatsApp e Telegram: entrega confiável, tratamento de falhas e sem duplicidade de disparos em picos de reprocessamento.',
       'Projetei um fluxo de upload global direto ao S3 via URLs pré-assinadas, adotado por mais de 10 módulos do sistema.',
       'Integrei câmeras de monitoramento de obras via protocolo RTSP, estruturando o streaming de vídeo para acompanhamento remoto dos canteiros.',
     ],
@@ -175,7 +175,7 @@ export const personalInfo = {
   shortBio:
     'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto, atuando em arquitetura, infraestrutura e desenvolvimento. Hoje construo agentes de IA que rodam em produção.',
   fullBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto. Atuo em todas as fases do ciclo: arquitetura, infraestrutura e desenvolvimento. Hoje construo agentes de IA que rodam em produção, com MCP e especificação antes do código.',
+    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto. Atuo em todas as fases do ciclo: arquitetura, infraestrutura e desenvolvimento. Hoje trabalho com engenharia de IA aplicada, construindo agentes que rodam em produção.',
   photoUrl: '/uploads/backback.webp',
   // Fallback real para navegadores sem WebP (antes apontava para um
   // arquivo byte a byte idêntico ao principal, então nunca serviu de nada).

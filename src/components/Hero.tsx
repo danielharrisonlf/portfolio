@@ -92,10 +92,15 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
         margin: '0 auto',
         padding: '56px 64px 88px',
         /*
-         * Sem min-height de viewport: o conteúdo ocupava ~500px dentro de um
-         * bloco de ~1100px, deixando uma faixa morta embaixo que lia como
-         * conteúdo faltando. A altura agora acompanha o conteúdo.
+         * O hero ocupa exatamente a primeira dobra (viewport menos a navbar):
+         * a seção seguinte não deve espiar na tela inicial. Não é o antigo
+         * bloco de ~1100px com faixa morta — aqui o conteúdo fica centrado
+         * verticalmente e o excedente vira respiro simétrico.
+         * `svh` para o mobile, onde a barra do navegador muda a altura.
+         * O mobile sobrescreve para `auto` no CSS: lá o conteúdo é mais alto
+         * que a dobra e travar altura só criaria rolagem dupla.
          */
+        minHeight: 'calc(100svh - var(--nav-h))',
         alignItems: 'center',
         minWidth: 0,
       }}
