@@ -164,11 +164,18 @@ export const education: EducationItem[] = [
 
 export const personalInfo = {
   name: 'Daniel Harrison',
-  role: 'Software Developer — Applied Engineer',
+  role: 'Software Developer — Applied AI Engineer',
+  /** Chips exibidos sob o nome no hero. Antes eram markup duplicado no Hero. */
+  roleChips: ['Software Developer', 'Applied AI Engineer'],
+  /*
+   * Duas versões da bio: a curta aparece no mobile, a longa no desktop.
+   * As duas precisam carregar a mesma ideia — antes a curta era só uma lista
+   * de áreas e perdia o "gosto de construir", que é o que diferencia.
+   */
   shortBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência, focado em arquitetura, infraestrutura e produtos com IA (agentes, MCP, SDD).',
+    'Desenvolvedor Full Stack com 3 anos de experiência, hoje focado em IA aplicada. Gosto de construir e de entrar na decisão do produto — atuo em todas as fases do ciclo, de arquitetura a manutenção.',
   fullBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir coisas e atuar de forma ativa na criação do produto, não só entregar tarefas. Tenho experiência em todo o ciclo de desenvolvimento: arquitetura, infraestrutura, desenvolvimento e manutenção. Estou imerso em desenvolvimento com IA: agentes, subagentes, criação de skills, MCP e SDD (spec-driven development).',
+    'Desenvolvedor Full Stack com 3 anos de experiência, hoje focado em IA aplicada. Gosto de construir e de entrar na decisão do produto, não só na execução — atuo em todas as fases do ciclo: arquitetura, infraestrutura, desenvolvimento e manutenção. Na prática, isso tem sido agentes, subagentes, MCP e desenvolvimento guiado por especificação (SDD).',
   photoUrl: '/uploads/backback.webp',
   // Fallback real para navegadores sem WebP (antes apontava para um
   // arquivo byte a byte idêntico ao principal, então nunca serviu de nada).

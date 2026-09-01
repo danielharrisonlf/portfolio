@@ -521,6 +521,14 @@ button:focus-visible {
   #stack-chips-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+
+  /* "APPLIED AI ENGINEER" mede 169px a 11.5px e não cabe ao lado da foto
+     num card de 265px. A 10px cai para ~140px e sobra folga. */
+  .role-chip {
+    font-size: 10px !important;
+    letter-spacing: 0.4px !important;
+    padding: 4px 9px !important;
+  }
 }
 
 @media (max-width: 480px) {

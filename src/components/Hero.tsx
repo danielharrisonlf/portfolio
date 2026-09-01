@@ -179,7 +179,7 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
               {personalInfo.name}
             </h1>
 
-            {/* Chips de Cargo com alto contraste e fonte clara */}
+            {/* Chips de cargo — vêm de personalInfo.roleChips */}
             <div
               style={{
                 display: 'flex',
@@ -188,49 +188,30 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
                 alignItems: 'flex-start',
               }}
             >
-              <div
-                className="role-chip"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  fontFamily: "'IBM Plex Mono', monospace",
-                  textTransform: 'uppercase',
-                  fontSize: '11.5px',
-                  letterSpacing: '0.75px',
-                  color: 'var(--fg)',
-                  fontWeight: 600,
-                  background: 'color-mix(in oklch, var(--accent) 18%, transparent)',
-                  border: '1px solid color-mix(in oklch, var(--accent) 45%, transparent)',
-                  borderRadius: '5px',
-                  padding: '4px 11px',
-                  lineHeight: 1.3,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                Software Developer
-              </div>
-
-              <div
-                className="role-chip"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  fontFamily: "'IBM Plex Mono', monospace",
-                  textTransform: 'uppercase',
-                  fontSize: '11.5px',
-                  letterSpacing: '0.75px',
-                  color: 'var(--fg)',
-                  fontWeight: 600,
-                  background: 'color-mix(in oklch, var(--accent) 18%, transparent)',
-                  border: '1px solid color-mix(in oklch, var(--accent) 45%, transparent)',
-                  borderRadius: '5px',
-                  padding: '4px 11px',
-                  lineHeight: 1.3,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                Applied Engineer
-              </div>
+              {personalInfo.roleChips.map((chip) => (
+                <div
+                  key={chip}
+                  className="role-chip"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    textTransform: 'uppercase',
+                    fontSize: '11.5px',
+                    letterSpacing: '0.75px',
+                    color: 'var(--fg)',
+                    fontWeight: 600,
+                    background: 'color-mix(in oklch, var(--accent) 18%, transparent)',
+                    border: '1px solid color-mix(in oklch, var(--accent) 45%, transparent)',
+                    borderRadius: '5px',
+                    padding: '4px 11px',
+                    lineHeight: 1.3,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {chip}
+                </div>
+              ))}
             </div>
           </div>
         </div>
