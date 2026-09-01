@@ -360,7 +360,12 @@ export const Hero: React.FC<HeroProps> = ({ stack, practices, isDark }) => {
             id="stack-chips-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+              /*
+               * 3 colunas fixas eram estreitas demais no mobile: rótulos como
+               * "React Native" e "PostgreSQL" transbordavam o chip. auto-fit dá
+               * 3 colunas no desktop e cai para 2 (ou 1) quando não cabe.
+               */
+              gridTemplateColumns: 'repeat(auto-fit, minmax(128px, 1fr))',
               gap: '10px',
             }}
           >

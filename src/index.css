@@ -29,6 +29,24 @@
   --accent-contrast: #ffffff;
 
   --ok: oklch(44% 0.15 150);
+
+  /*
+   * Cores de marca: mesmo matiz, luminosidade ajustada por tema.
+   * Os valores oficiais são calibrados para fundo escuro — sobre o fundo
+   * claro, React (1.53:1), AWS (2.02:1) e WhatsApp (1.87:1) ficavam lavados
+   * e reprovavam o mínimo de 3:1 do WCAG 1.4.11 para elementos gráficos.
+   * As variantes abaixo medem >= 3.2:1 e continuam reconhecíveis.
+   */
+  --brand-node: #599749;
+  --brand-react: #4193a9;
+  --brand-aws: #c87800;
+  --brand-docker: #228ddf;
+  --brand-telegram: #2292ca;
+  --brand-whatsapp: #1b9c4b;
+  --brand-grafana: #e66200;
+  --brand-claude: #cc7052;
+  --brand-opencode: #0d9a6b;
+  --brand-cpp: #00599c;
 }
 
 [data-theme='dark'] {
@@ -43,6 +61,18 @@
   --accent-contrast: oklch(15% 0.004 285);
 
   --ok: oklch(80% 0.16 150);
+
+  /* No escuro valem as cores oficiais — só C++ precisava clarear (2.73:1) */
+  --brand-node: #5fa04e;
+  --brand-react: #61dafb;
+  --brand-aws: #ff9900;
+  --brand-docker: #2496ed;
+  --brand-telegram: #26a5e4;
+  --brand-whatsapp: #25d366;
+  --brand-grafana: #f46800;
+  --brand-claude: #d97757;
+  --brand-opencode: #10b981;
+  --brand-cpp: #1667a5;
 }
 
 * {
@@ -307,14 +337,17 @@ button:focus-visible {
   }
 
   /* A esteira precisa parar de fato, não só ficar rápida.
-     Vira uma faixa de rolagem manual: mantém o layout compacto e
-     continua acessível, sem empilhar 16 chips e esticar o hero. */
+     Sem animação ela vira uma grade completa: todos os itens visíveis de
+     uma vez, sem rolagem. Uma faixa cortada na horizontal leria como bug. */
   .marquee-track {
     animation: none !important;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 10px;
   }
 
   .marquee-viewport {
-    overflow-x: auto !important;
+    overflow: visible !important;
     -webkit-mask-image: none !important;
     mask-image: none !important;
   }

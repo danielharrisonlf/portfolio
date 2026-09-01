@@ -269,6 +269,108 @@ Isto eu não podia fazer sem inventar informação:
 
 ---
 
+## Rodada 2 — correções após seu retorno
+
+### Ícones da stack sumindo — era bug, você estava certo
+
+Minha verificação na primeira rodada foi furada: contei os `<svg>` do grid
+inteiro em vez de contar por chip, e concluí que estava tudo certo. Não estava.
+
+**Causa raiz:** os SVGs do `react-icons` não trazem `flex-shrink: 0`. Dentro de um
+chip flex cujo texto é `nowrap`, o ícone é o único item que pode ceder — e era
+esmagado até **largura 0** nos três rótulos mais longos:
+
+| Chip | Largura do ícone antes | Depois |
+|---|---|---|
+| TypeScript | **0px** | 15px |
+| React Native | **0px** | 16px |
+| PostgreSQL | **0px** | 15px |
+| Node.js | 9.9px | 15px |
+| NestJS | 11.6px | 15px |
+| Docker | 13.1px | 15px |
+
+Corrigido com um `iconStyle` base no `TechIcon` (`flexShrink: 0`), aplicado aos
+**55 ícones** de uma vez.
+
+**Problema real por trás disso:** o ícone estava servindo de válvula de escape
+para um layout que não cabia. Com o ícone fixo, o *texto* passou a transbordar
+("PostgreSQL", "React Native"). O grid de 3 colunas fixas é estreito demais no
+mobile. Trocado por `repeat(auto-fit, minmax(128px, 1fr))`.
+
+Verificado em 4 larguras:
+
+| Viewport | Colunas | Texto transbordando | Ícones esmagados |
+|---|---|---|---|
+| 320px | 1 | nenhum | nenhum |
+| 390px | 2 | nenhum | nenhum |
+| 768px | 3 | nenhum | nenhum |
+| 1440px | 3 | nenhum | nenhum |
+
+### Ícones lavados no tema claro
+
+Aproveitei para fechar o mesmo defeito que eu tinha deixado pela metade. As cores
+oficiais das marcas são calibradas para fundo escuro; sobre o fundo claro várias
+reprovavam o mínimo de **3:1** do WCAG 1.4.11 para elementos gráficos:
+
+| Marca | Antes (claro) | Depois |
+|---|---|---|
+| React | **1.53** ❌ | 3.32 ✅ |
+| WhatsApp | **1.87** ❌ | 3.37 ✅ |
+| AWS | **2.02** ❌ | 3.23 ✅ |
+| OpenCode | **2.39** ❌ | 3.38 ✅ |
+| Telegram | **2.61** ❌ | 3.29 ✅ |
+| Grafana | 2.90 ❌ | 3.25 ✅ |
+| Claude | 2.95 ❌ | 3.30 ✅ |
+| Docker | 2.98 ❌ | 3.33 ✅ |
+| Node.js | 2.99 ❌ | 3.35 ✅ |
+| C++ (no **escuro**) | **2.73** ❌ | 3.31 ✅ |
+
+Viraram tokens `--brand-*` definidos por tema: mesmo matiz, luminosidade ajustada.
+As marcas que já passavam nos dois temas (TypeScript, PostgreSQL, Redis, NestJS,
+Java, Gmail, LinkedIn, MySQL, OpenTelemetry, Python) mantiveram o hex oficial.
+
+**Resultado final: 25 ícones medidos, zero abaixo de 3:1 nos dois temas.**
+Pior caso: AWS 3.23 no claro, PostgreSQL 4.06 no escuro.
+
+### A esteira: não sumiu, está desligada pelo seu Windows
+
+`prefers-reduced-motion: reduce` está **ligado no seu sistema** — confirmei no seu
+próprio Chrome. A regra de acessibilidade que adicionei na rodada 1 desliga a
+animação para quem tem essa preferência, então você nunca vê a esteira rodando.
+Para todo mundo sem essa configuração, ela continua girando normalmente.
+
+O que estava ruim era o *fallback*: uma faixa de rolagem horizontal cortada, que
+lia como bug. Agora, sem animação, o bloco vira uma **grade completa com os 16
+itens visíveis de uma vez** — sem rolagem, sem corte.
+
+Como mudar, se quiser:
+- **Ver a esteira animada na sua máquina:** desligue "reduzir movimento" no
+  Windows (Configurações → Acessibilidade → Efeitos visuais → Efeitos de animação).
+- **Animar para todo mundo, ignorando a preferência:** remova o bloco
+  `.marquee-track { animation: none !important; ... }` de dentro do
+  `@media (prefers-reduced-motion: reduce)` no `src/index.css`. Recomendo não
+  fazer isso — respeitar a preferência é o comportamento correto, e a grade
+  estática mostra mais informação de uma vez do que a esteira.
+
+### "Vamos conversar" em tela cheia
+
+A seção virou o fechamento que ela deveria ser:
+
+- `min-height: calc(100svh - var(--nav-h))` com conteúdo centralizado — ocupa a
+  tela inteira (medido: 575px de seção em viewport de 639px, exatamente o alvo).
+- Título em `clamp(38px, 7vw, 76px)`: ganha presença no desktop sem estourar no
+  mobile.
+- Eyebrow "CONTATO" em mono, para ancorar a seção.
+- **Hierarquia de ação clara:** o e-mail virou CTA sólido na cor da marca;
+  LinkedIn e GitHub viraram secundários.
+- O clique no e-mail fazia duas coisas ao mesmo tempo (abria o mailto *e*
+  copiava). Separado: o botão principal abre o e-mail, um botão "Copiar" ao lado
+  copia, com feedback de estado e anúncio via `aria-live` para leitores de tela.
+- O `navigator.clipboard` agora tem tratamento de erro (falhava silencioso em
+  contexto inseguro).
+
+---
+
 ## Débito técnico que ficou
 
 Não mexi por ser refatoração grande e fora do escopo de uma revisão visual:
