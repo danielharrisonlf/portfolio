@@ -234,27 +234,55 @@ button:focus-visible {
   transform-origin: center;
 }
 
-/* Circular Ripple View Transitions API */
+/*
+ * Troca de tema: o tema novo é revelado por baixo de um círculo que cresce a
+ * partir do ponto clicado. --tt-x / --tt-y / --tt-size vêm do useTheme.
+ *
+ * A revelação usa máscara em vez de clip-path porque clip-path só corta em
+ * aresta viva — máscara aceita gradiente, o que dá a borda esfumaçada.
+ * O gradiente é `closest-side`: o raio é metade do lado da caixa, sólido até
+ * 88% dele, e os 12% finais são a transição suave.
+ */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
+/* O tema antigo fica parado embaixo; o novo é revelado por cima. */
 ::view-transition-old(root) {
   z-index: 1;
 }
 
 ::view-transition-new(root) {
   z-index: 9999;
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0 88%, transparent 100%);
+  mask-image: radial-gradient(circle closest-side, #000 0 88%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: themeReveal 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-[data-theme='dark']::view-transition-old(root) {
-  z-index: 9999;
-}
-
-[data-theme='dark']::view-transition-new(root) {
-  z-index: 1;
+/*
+ * mask-size e mask-position são animados juntos: a posição acompanha metade
+ * do tamanho para o centro do círculo ficar cravado no ponto do clique
+ * enquanto ele cresce (a máscara é ancorada pelo canto, não pelo centro).
+ */
+@keyframes themeReveal {
+  from {
+    -webkit-mask-size: 0 0;
+    mask-size: 0 0;
+    -webkit-mask-position: var(--tt-x, 50%) var(--tt-y, 50%);
+    mask-position: var(--tt-x, 50%) var(--tt-y, 50%);
+  }
+  to {
+    -webkit-mask-size: var(--tt-size, 250vmax) var(--tt-size, 250vmax);
+    mask-size: var(--tt-size, 250vmax) var(--tt-size, 250vmax);
+    -webkit-mask-position: calc(var(--tt-x, 50%) - var(--tt-size, 250vmax) / 2)
+      calc(var(--tt-y, 50%) - var(--tt-size, 250vmax) / 2);
+    mask-position: calc(var(--tt-x, 50%) - var(--tt-size, 250vmax) / 2)
+      calc(var(--tt-y, 50%) - var(--tt-size, 250vmax) / 2);
+  }
 }
 
 @keyframes heroIn {
@@ -343,6 +371,11 @@ button:focus-visible {
 
   .marquee-track {
     animation: marqueeScroll 45s linear infinite !important;
+  }
+
+  /* A revelação da troca de tema também roda sempre, por decisão do autor */
+  ::view-transition-new(root) {
+    animation: themeReveal 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
   }
 
   .circuit-breathe,

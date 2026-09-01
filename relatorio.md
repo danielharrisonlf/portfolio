@@ -482,6 +482,92 @@ para a barra não encostar no card mesmo em telas mais baixas.
 
 ---
 
+## Rodada 5 — transição de tema
+
+### Referências consultadas
+
+- [theme-toggle.rdsx.dev](https://theme-toggle.rdsx.dev/) — galeria de variantes
+  (círculo simples, círculo desfocado, pivô no canto, clip-path, gradiente SVG)
+- [Full-page theme toggle animation with View Transitions API](https://akashhamirwasia.com/blog/full-page-theme-toggle-animation-with-view-transitions-api/)
+- [Animated Dark Mode Toggle with View Transitions API in React](https://www.notanumber.in/blog/animated-dark-mode-toggle-with-view-transitions-api-in-react)
+- [ViewTransition: ready — MDN](https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/ready)
+
+O ponto principal das referências: **`clip-path` corta em aresta viva e não
+aceita gradiente nem blur**; para uma borda suave é preciso usar máscara.
+
+### O que já existia e por que você não via
+
+Já havia uma revelação circular com View Transitions, mas com dois problemas:
+
+1. **Estava desligada para você.** O `useTheme` só usava View Transitions se
+   `prefers-reduced-motion` estivesse desligado — e no seu Windows está ligado.
+   Mesmo caso da esteira. O gate foi removido.
+2. **O snapshot podia sair errado.** A troca era feita só via `setState`. O React
+   agrupa atualizações, então a View Transition podia capturar o estado "depois"
+   ainda com o tema antigo. Agora o atributo `data-theme` é trocado de forma
+   síncrona dentro do callback.
+
+### O efeito novo
+
+`clip-path` saiu, entrou máscara com gradiente radial:
+
+```css
+::view-transition-new(root) {
+  mask-image: radial-gradient(circle closest-side, #000 0 88%, transparent 100%);
+  animation: themeReveal 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+```
+
+O `mask-size` e o `mask-position` são animados **juntos**: a posição recua metade
+do tamanho a cada quadro, o que mantém o centro do círculo cravado no botão
+enquanto ele cresce (a máscara é ancorada pelo canto, não pelo centro).
+
+Geometria conferida na tela, com o estado de 50% aplicado estaticamente:
+
+| | Valor |
+|---|---|
+| Raio até o canto mais distante | 1459px |
+| Caixa da máscara (`--tt-size`) | 4087px (raio × 2.8) |
+| Centro em 50% da animação | (1300, 32) — exatamente o ponto de origem |
+| Raio sólido no fim | 1798px, contra 1459px necessários |
+| Largura do degradê | 245px |
+
+O primeiro valor testado (sólido até 80%) dava um degradê de 410px — 26% da
+largura da tela, tão suave que o círculo perdia a forma. 88% dá 245px: ainda
+macio, mas lê como círculo.
+
+### Dois defeitos encontrados durante o teste
+
+1. **Origem errada no teclado.** O código usava `event.clientX/clientY`. Ativação
+   por teclado (Enter/Espaço) dispara um clique com coordenadas **zero**, então o
+   círculo nasceria no canto superior esquerdo em vez do botão. Passou a usar o
+   retângulo do próprio botão (`currentTarget`), que vale para mouse, toque e
+   teclado.
+2. **Promise rejeitada sem tratamento.** Quando a transição é abortada — aba em
+   segundo plano, ou dois cliques rápidos — `ready` e `finished` rejeitam com
+   `InvalidStateError` e viravam `Uncaught (in promise)` no console. Ambas
+   ganharam `catch`. A troca de tema em si nunca dependeu disso: o callback roda
+   mesmo com a transição abortada (verificado).
+
+### Limite da verificação
+
+Não consegui assistir à animação rodando: a aba controlada por automação fica
+sempre com `visibilityState: "hidden"`, e a View Transitions API se recusa a
+animar nesse estado (`InvalidStateError`). Verifiquei o que dava para verificar
+sem isso — regras e keyframes presentes no CSS, geometria da máscara renderizada
+na tela, origem correta, e console limpo depois de trocas simples e de cliques
+duplos. **Os quadros em movimento, só você vendo no navegador.**
+
+### Nota sobre `prefers-reduced-motion`
+
+Assim como a esteira, essa animação roda mesmo para quem pediu menos movimento
+(há uma regra explícita no bloco `@media`). Um wipe de tela inteira é
+justamente o tipo de efeito que incomoda quem tem sensibilidade a movimento —
+se um dia quiser respeitar a preferência, basta remover essa regra do bloco:
+o tema continua trocando, só sem animação.
+
+---
+
 ## Débito técnico que ficou
 
 Não mexi por ser refatoração grande e fora do escopo de uma revisão visual:
