@@ -327,7 +327,12 @@ button:focus-visible {
     scroll-behavior: auto;
   }
 
-  *,
+  /*
+   * A esteira fica de fora por decisão explícita: ela roda sempre, mesmo
+   * para quem pediu menos movimento. Por isso o :not() aqui — sem ele o
+   * animation-duration/iteration-count abaixo a congelaria.
+   */
+  *:not(.marquee-track),
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
@@ -336,25 +341,8 @@ button:focus-visible {
     scroll-behavior: auto !important;
   }
 
-  /* A esteira precisa parar de fato, não só ficar rápida.
-     Sem animação ela vira uma grade completa: todos os itens visíveis de
-     uma vez, sem rolagem. Uma faixa cortada na horizontal leria como bug. */
   .marquee-track {
-    animation: none !important;
-    flex-wrap: wrap;
-    width: 100%;
-    gap: 10px;
-  }
-
-  .marquee-viewport {
-    overflow: visible !important;
-    -webkit-mask-image: none !important;
-    mask-image: none !important;
-  }
-
-  /* A cópia só servia para o loop parecer contínuo */
-  .marquee-dup {
-    display: none !important;
+    animation: marqueeScroll 45s linear infinite !important;
   }
 
   .circuit-breathe,
@@ -482,15 +470,25 @@ button:focus-visible {
     height: 72px !important;
     flex-shrink: 0 !important;
   }
+  /* O rótulo faz parte do desenho do dock (ícone em cima, texto embaixo),
+     então não é escondido — só aperta um pouco em telas bem estreitas. */
   .dock-label {
-    display: none !important;
-  }
-  #floating-nav-dock {
-    gap: 2px !important;
-    padding: 4px 6px !important;
-    bottom: 16px !important;
+    font-size: 8px !important;
+    letter-spacing: 0.3px !important;
   }
   #floating-nav-dock button {
-    padding: 8px 10px !important;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
+}
+
+/* Abaixo de 360px "EXPERIÊNCIA" não cabe em 8px e era cortada com reticências */
+@media (max-width: 360px) {
+  .dock-label {
+    font-size: 7px !important;
+    letter-spacing: 0.1px !important;
+  }
+  #floating-nav-dock {
+    width: calc(100% - 16px) !important;
   }
 }

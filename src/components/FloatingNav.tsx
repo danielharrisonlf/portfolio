@@ -18,11 +18,11 @@ interface FloatingNavProps {
 
 /** Ícone por âncora. Se um item novo aparecer sem ícone, cai no TbFolderCode. */
 const ICON_BY_ID: Record<string, React.ReactNode> = {
-  'hero-grid': <TbHome size={15} />,
-  experiencia: <TbBriefcase size={15} />,
-  projetos: <TbFolderCode size={15} />,
-  sobre: <TbSchool size={15} />,
-  contato: <TbMail size={15} />,
+  'hero-grid': <TbHome size={19} />,
+  experiencia: <TbBriefcase size={19} />,
+  projetos: <TbFolderCode size={19} />,
+  sobre: <TbSchool size={19} />,
+  contato: <TbMail size={19} />,
 };
 
 export const FloatingNav: React.FC<FloatingNavProps> = ({ navItems, isMenuOpen }) => {
@@ -86,23 +86,21 @@ export const FloatingNav: React.FC<FloatingNavProps> = ({ navItems, isMenuOpen }
       aria-label="Navegação rápida"
       style={{
         position: 'fixed',
-        bottom: '24px',
+        bottom: '14px',
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 900,
         display: 'flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '5px 6px',
-        background: 'color-mix(in oklch, var(--bg2) 75%, transparent)',
+        alignItems: 'stretch',
+        width: 'calc(100% - 24px)',
+        maxWidth: '520px',
+        padding: '4px',
+        background: 'color-mix(in oklch, var(--bg2) 88%, transparent)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        border: '1px solid color-mix(in oklch, var(--border) 80%, transparent)',
-        borderRadius: '9999px',
-        boxShadow:
-          '0 8px 32px -4px rgba(0, 0, 0, 0.25), 0 0 0 1px color-mix(in oklch, var(--accent) 15%, transparent)',
-        transition: 'transform 0.3s ease, opacity 0.3s ease',
-        maxWidth: 'calc(100vw - 32px)',
+        border: '1px solid var(--border)',
+        borderRadius: '14px',
+        boxShadow: '0 10px 34px -8px rgba(0, 0, 0, 0.45)',
       }}
     >
       {items.map((item) => {
@@ -119,41 +117,48 @@ export const FloatingNav: React.FC<FloatingNavProps> = ({ navItems, isMenuOpen }
             aria-label={item.label}
             aria-current={isActive ? 'true' : undefined}
             style={{
-              position: 'relative',
+              /* flex:1 com minWidth:0 distribui os 5 itens igualmente e
+                 permite encolher em telas estreitas sem estourar a barra */
+              flex: '1 1 0',
+              minWidth: 0,
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '6px',
-              padding: '7px 12px',
-              borderRadius: '9999px',
+              justifyContent: 'center',
+              gap: '5px',
+              padding: '9px 2px 7px',
+              borderRadius: '10px',
               border: 'none',
-              background: isActive
-                ? 'var(--accent-solid)'
-                : isHover
-                ? 'color-mix(in oklch, var(--fg) 8%, transparent)'
+              background: isHover && !isActive
+                ? 'color-mix(in oklch, var(--fg) 7%, transparent)'
                 : 'transparent',
-              color: isActive
-                ? 'var(--accent-contrast)'
-                : isHover
-                ? 'var(--fg)'
-                : 'var(--muted)',
-              fontSize: '12px',
-              fontWeight: isActive ? 600 : 500,
-              fontFamily: "'IBM Plex Mono', monospace",
+              color: isActive ? 'var(--accent)' : 'var(--muted)',
               cursor: 'pointer',
-              transition:
-                'background 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease',
-              transform: isHover ? 'scale(1.04)' : 'scale(1)',
-              boxShadow: isActive
-                ? '0 2px 10px -1px color-mix(in oklch, var(--accent) 50%, transparent)'
-                : 'none',
+              transition: 'color 0.2s ease, background 0.2s ease',
               outline: 'none',
-              whiteSpace: 'nowrap',
+              WebkitTapHighlightColor: 'transparent',
             }}
           >
-            <span style={{ display: 'flex', alignItems: 'center' }}>
-              {ICON_BY_ID[item.id] ?? <TbFolderCode size={15} />}
+            <span style={{ display: 'flex', alignItems: 'center', lineHeight: 0 }}>
+              {ICON_BY_ID[item.id] ?? <TbFolderCode size={19} />}
             </span>
-            <span className="dock-label">{item.label}</span>
+            <span
+              className="dock-label"
+              style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: '8.5px',
+                fontWeight: isActive ? 600 : 500,
+                letterSpacing: '0.6px',
+                textTransform: 'uppercase',
+                lineHeight: 1,
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {item.label}
+            </span>
           </button>
         );
       })}

@@ -332,7 +332,7 @@ Java, Gmail, LinkedIn, MySQL, OpenTelemetry, Python) mantiveram o hex oficial.
 **Resultado final: 25 ícones medidos, zero abaixo de 3:1 nos dois temas.**
 Pior caso: AWS 3.23 no claro, PostgreSQL 4.06 no escuro.
 
-### A esteira: não sumiu, está desligada pelo seu Windows
+### A esteira (situação revertida na rodada 3 — ver abaixo)
 
 `prefers-reduced-motion: reduce` está **ligado no seu sistema** — confirmei no seu
 próprio Chrome. A regra de acessibilidade que adicionei na rodada 1 desliga a
@@ -368,6 +368,76 @@ A seção virou o fechamento que ela deveria ser:
   copia, com feedback de estado e anúncio via `aria-live` para leitores de tela.
 - O `navigator.clipboard` agora tem tratamento de erro (falhava silencioso em
   contexto inseguro).
+
+---
+
+## Rodada 3 — esteira sempre ativa e dock redesenhado
+
+### Esteira roda sempre, por decisão sua
+
+Removida a exceção de `prefers-reduced-motion` **apenas para a esteira**. Ela agora
+anima para todo mundo, inclusive para quem tem "reduzir movimento" ligado no
+sistema.
+
+Implementação: a regra global que congela animações passou a ser
+`*:not(.marquee-track)`, e a esteira tem a animação reafirmada logo em seguida.
+Sem o `:not()`, o `animation-duration: 0.01ms !important` a congelaria mesmo com
+a regra específica depois.
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *:not(.marquee-track), *::before, *::after { animation-duration: 0.01ms !important; ... }
+  .marquee-track { animation: marqueeScroll 45s linear infinite !important; }
+}
+```
+
+Verificado com `getAnimations()`: a animação existe como `CSSAnimation`, estado
+`running`, **duração efetiva de 45000ms** — ou seja, não foi congelada. (O
+`currentTime` não avança durante o teste porque a aba automatizada fica
+`visibilityState: "hidden"`; animações não rodam em aba oculta.)
+
+**O que continua respeitando `prefers-reduced-motion`:** as animações do circuito
+no hero (`circuit-breathe`, `node-breathe`), as transições gerais e o scroll
+suave. Só a esteira foi liberada. Se quiser liberar essas também, é remover o
+resto do bloco.
+
+### Dock redesenhado no estilo da referência
+
+O dock inferior passou de pílulas horizontais (ícone + texto lado a lado) para o
+formato da imagem que você mandou: **ícone em cima, rótulo em maiúsculas embaixo**.
+
+| | Antes | Depois |
+|---|---|---|
+| Layout do item | ícone e texto lado a lado | ícone sobre o rótulo |
+| Item ativo | pílula preenchida | ícone e texto na cor de destaque, sem preenchimento |
+| Rótulo | 12px, escondido abaixo de 480px | mono 8.5px maiúsculo, **sempre visível** |
+| Barra | pílula justa ao conteúdo | barra de largura fluida, cantos 14px, máx. 520px |
+| Distribuição | conforme o texto | `flex: 1` — os 5 itens ocupam faixas iguais |
+
+O rótulo deixou de ser escondido em telas pequenas porque agora ele faz parte do
+desenho. Para caber, o tamanho cai em dois degraus (8px abaixo de 480px, 7px
+abaixo de 360px).
+
+Verificado em 5 larguras — nenhum rótulo cortado, nenhum overflow horizontal:
+
+| Viewport | 320 | 360 | 390 | 480 | 768 |
+|---|---|---|---|---|---|
+| Largura da barra | 289 | 329 | 359 | 441 | 520 |
+| Rótulos cortados | 0 | 0 | 0 | 0 | 0 |
+
+Confirmado também que o conteúdo do rodapé não fica coberto pela barra (a folga
+de 96px no `padding-bottom` do rodapé no mobile é maior que os 72px que a barra
+ocupa) e que o item ativo no fim da página é "CONTATO".
+
+**Duas coisas que mantive de propósito** — diga se prefere diferente:
+
+1. **Os rótulos.** Sua referência dizia `HOME` e `SOBRE`; mantive `INÍCIO` e
+   `FORMAÇÃO` para não divergirem da navbar e do título da seção
+   ("Formação Acadêmica"). Trocar é editar `navItems` em `portfolioData.ts` —
+   mas aí o menu e a navbar mudam junto, que é justamente o ponto da fonte única.
+2. **A barra continua só no mobile/tablet** (até 900px). No desktop a navbar é
+   fixa desde a rodada 1, então mostrar a barra também ali seriam duas navegações
+   permanentes na tela ao mesmo tempo.
 
 ---
 
