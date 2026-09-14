@@ -11,7 +11,6 @@ export function EducationSection({ education, practices }: EducationSectionProps
   return (
     <Section
       id="formacao"
-      index="03"
       title="Formação"
       intro="Graduação em curso e a base que veio da engenharia — junto com as práticas de engenharia de software que aplico no dia a dia."
     >

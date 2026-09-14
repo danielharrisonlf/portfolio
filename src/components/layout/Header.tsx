@@ -117,11 +117,19 @@ export function Header({
         </div>
       </div>
 
-      {/* Progresso de leitura: 1,5px, discreto, mas dá noção de tamanho. */}
+      {/* Progresso de leitura: 1,5px, discreto, mas dá noção de tamanho.
+          O valor vai por variável CSS porque a barra é animada por
+          `transform: scaleX` — animar `width` refaria layout a cada quadro.
+          `role="progressbar"` porque é isso que ele é; sem isso é só um
+          retângulo colorido que o leitor de tela ignora. */}
       <div
         className={styles.progress}
-        style={{ width: `${progress}%` }}
-        aria-hidden="true"
+        style={{ '--progress': progress / 100 } as React.CSSProperties}
+        role="progressbar"
+        aria-label="Progresso de leitura da página"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(progress)}
       />
     </header>
   );

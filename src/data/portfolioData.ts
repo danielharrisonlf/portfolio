@@ -175,7 +175,6 @@ export const experiences: ExperienceItem[] = [
 export const projects: ProjectItem[] = [
   {
     id: 'gestor-financeiro',
-    index: '01',
     name: 'Gestor financeiro pessoal com IA',
     pitch: 'Registrar um gasto deveria custar uma mensagem, não um formulário.',
     desc: 'Controle de gastos integrado ao Telegram: um agente de IA registra e categoriza transações a partir de mensagens de texto, sem exigir que o usuário abra um app. A prioridade é fricção baixa, não relatório completo.',
@@ -188,7 +187,6 @@ export const projects: ProjectItem[] = [
   },
   {
     id: 'observabilidade-agentes',
-    index: '02',
     name: 'Observabilidade para agentes de IA',
     pitch: 'Agente em produção sem métrica é conta que chega sem aviso.',
     desc: 'Dashboard de custo, latência e tracing de chamadas MCP, pensado para times que rodam agentes em produção e precisam justificar gasto de token e diagnosticar falhas rápido.',

@@ -210,17 +210,26 @@
 
 /* --- Barra de progresso de leitura -------------------------------------- */
 
+/*
+ * Animada por `transform: scaleX`, não por `width`.
+ *
+ * Animar `width` obriga o navegador a refazer layout a cada quadro — e esta
+ * barra atualiza a cada evento de rolagem, o que faz dela o pior lugar
+ * possível para isso. `transform` roda na composição, sem tocar no layout.
+ */
 .progress {
   position: absolute;
   left: 0;
   bottom: -1px;
-  /* Explícito: o header é sticky e cria contexto de empilhamento próprio,
-     então sem z-index a barra poderia ficar atrás do fundo. */
   z-index: 1;
+  width: 100%;
   height: 1.5px;
   background: var(--accent);
-  transition: width 90ms linear;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+  transition: transform 90ms linear;
   pointer-events: none;
+  will-change: transform;
 }
 
 /* ==========================================================================

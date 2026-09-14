@@ -13,18 +13,17 @@
 
 /* --- Cabeçalho --------------------------------------------------------- */
 
+/*
+ * O espaço ACIMA do título é maior que o abaixo: o respiro de topo da seção
+ * é `--section-y` (até 104px), contra os 40px de intervalo até o conteúdo.
+ * É o que amarra o título à seção que ele abre, em vez de deixá-lo
+ * flutuando entre duas.
+ */
 .header {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  gap: var(--sp-4);
   max-width: 62ch;
-}
-
-.index {
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  color: var(--faint);
 }
 
 .title {
@@ -32,6 +31,7 @@
   font-weight: 600;
   letter-spacing: var(--tracking-snug);
   color: var(--fg);
+  text-wrap: balance;
 }
 
 .intro {

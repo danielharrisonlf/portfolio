@@ -36,7 +36,7 @@ export function ContactSection({ info }: { info: PersonalInfo }) {
         : 'Copiar';
 
   return (
-    <Section id="contato" index="04" title="Contato">
+    <Section id="contato" title="Contato">
       <div className={styles.head}>
         <p className={styles.title}>Vamos conversar</p>
         <p className="prose">

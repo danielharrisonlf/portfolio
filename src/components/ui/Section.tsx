@@ -3,8 +3,6 @@ import styles from './section.module.css';
 
 interface SectionProps {
   id: string;
-  /** Índice exibido acima do título (01, 02…). */
-  index: string;
   title: string;
   /** Uma linha explicando o que a seção responde. Opcional. */
   intro?: string;
@@ -18,8 +16,13 @@ interface SectionProps {
  * era uma coluna fixa à esquerda com cabeçalho e conteúdo ao lado — layout
  * bonito, mas que gasta ~170px de largura em todas as seções só para
  * repetir uma palavra. Em 1200px de container, isso é 14% da tela.
+ *
+ * Sem numeração (01, 02…). Ela existia como enfeite: a ordem das seções não
+ * carrega informação que o leitor precise — ninguém procura "a seção 03".
+ * Sequência numerada só se justifica quando a sequência em si significa
+ * algo (um passo a passo, uma ordem de execução).
  */
-export function Section({ id, index, title, intro, children }: SectionProps) {
+export function Section({ id, title, intro, children }: SectionProps) {
   const headingId = `${id}-heading`;
 
   return (
@@ -30,7 +33,6 @@ export function Section({ id, index, title, intro, children }: SectionProps) {
       className={`container ${styles.section}`}
     >
       <header className={styles.header}>
-        <span className={styles.index}>{index}</span>
         <h2 id={headingId} className={styles.title}>
           {title}
         </h2>

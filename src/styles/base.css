@@ -72,3 +72,50 @@
 [data-section] {
   scroll-margin-top: calc(var(--header-h) + var(--sp-4));
 }
+
+/* --------------------------------------------------------------------------
+   Superfícies do navegador
+   --------------------------------------------------------------------------
+   As partes que eu não desenhei ainda carregam o design: seleção de texto,
+   cursor de digitação, barra de rolagem, sublinhado de link. Todas saem de
+   fábrica com padrão do sistema operacional, que não pertence a design
+   system nenhum. Tematizar isso é o sinal mais barato de que a página foi
+   construída em vez de montada — e é o que mais se esquece.
+   -------------------------------------------------------------------------- */
+
+/*
+ * Barra de rolagem fina e na cor da paleta.
+ * `scrollbar-color` cobre Firefox e Chrome 121+; o par de `::-webkit-` cobre
+ * Safari e Chrome anteriores. Não são redundantes — são públicos diferentes.
+ */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--fg) 24%, transparent) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--fg) 22%, transparent);
+  border: 3px solid transparent;
+  border-radius: var(--radius-full);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklch, var(--fg) 38%, transparent);
+  background-clip: content-box;
+}
+
+/* O cursor de digitação na cor de destaque, não no padrão preto. */
+input,
+textarea {
+  caret-color: var(--accent);
+}

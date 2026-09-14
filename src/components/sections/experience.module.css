@@ -115,16 +115,27 @@
 
 /* --- Bloco de destaque -------------------------------------------------- */
 
+/*
+ * Destaque do bullet principal.
+ *
+ * A versão anterior usava `border-left: 2px solid var(--accent)` — a barra
+ * colorida na lateral do card, que é o tell mais reconhecível de interface
+ * gerada por IA. A hierarquia agora vem de uma régua fina no TOPO (a mesma
+ * linguagem do resto do site) mais o preenchimento elevado.
+ */
 .featured {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 30ch);
   gap: var(--sp-6);
   align-items: start;
-  padding: var(--sp-5);
-  border: 1px solid var(--line);
-  border-left: 2px solid var(--accent);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: var(--surface);
+  padding: var(--sp-5) 0;
+  border-top: 1px solid var(--accent-line);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(
+    to bottom,
+    var(--accent-tint),
+    transparent 60%
+  );
 }
 
 .featuredBody {

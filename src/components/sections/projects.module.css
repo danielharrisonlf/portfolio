@@ -1,7 +1,7 @@
 /* ==========================================================================
    Projetos
    Sem grade de cards. Dois projetos de pesos diferentes não podem ocupar
-   dois retângulos idênticos — isso comunica que são equivalentes, e some
+   dois retângulos idênticos � isso comunica que são equivalentes, e some
    com a hierarquia. Aqui o primeiro é uma entrada larga; o segundo entra
    deslocado, com a imagem menor. A assimetria é o que cria a leitura.
    ========================================================================== */
@@ -18,6 +18,10 @@
   border-top: 1px solid var(--line);
 }
 
+/*
+ * A primeira entrada não leva régua: o cabeçalho da seção já fecha com uma,
+ * e duas linhas a 40px de distância leem como engano, não como estrutura.
+ */
 .entry:first-child {
   padding-top: 0;
   border-top: none;
@@ -29,7 +33,7 @@
 
 /*
  * Três faixas: o cabeçalho ocupa a largura toda; abaixo, mídia e texto
- * dividem a linha. A coluna de texto é maior que a da imagem de propósito —
+ * dividem a linha. A coluna de texto é maior que a da imagem de propósito �
  * é ela que carrega a informação, e uma coluna estreita de texto ao lado de
  * uma imagem larga inverte a hierarquia.
  */
@@ -71,33 +75,6 @@
   max-width: 640px;
 }
 
-/* --- Cabeçalho da entrada ----------------------------------------------- */
-
-/*
- * Índice + régua. A régua dá o ponto de referência horizontal: sem ela, o
- * deslocamento da segunda entrada leria como desalinhamento em vez de
- * decisão.
- */
-.head {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-}
-
-.index {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--faint);
-  flex: none;
-}
-
-.rule {
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-
 /* --- Mídia -------------------------------------------------------------- */
 
 .mediaSlot {
@@ -128,8 +105,8 @@
 }
 
 /*
- * Placeholder para projeto sem captura. Desenha um diagrama de nós — o
- * vocabulário visual do site — em vez de um retângulo com a inicial, que
+ * Placeholder para projeto sem captura. Desenha um diagrama de nós � o
+ * vocabulário visual do site � em vez de um retângulo com a inicial, que
  * lia como imagem quebrada.
  */
 .placeholder {
@@ -138,7 +115,7 @@
   place-items: center;
   /*
    * O diagrama precisa ser legível, não um fantasma. A primeira versão
-   * usava accent a 55% de opacidade sobre um tint de 8% — no tema claro o
+   * usava accent a 55% de opacidade sobre um tint de 8% � no tema claro o
    * desenho praticamente desaparecia e o card lia como imagem quebrada, que
    * é exatamente o que o placeholder deveria evitar.
    */
@@ -320,7 +297,7 @@
     max-width: 100%;
   }
 
-  /* No empilhado, a mídia sempre vem primeiro — a ordem lógica de leitura
+  /* No empilhado, a mídia sempre vem primeiro � a ordem lógica de leitura
      é imagem, depois texto, e o grid não deve decidir isso por acaso. */
   .mediaSlot {
     order: -1;

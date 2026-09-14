@@ -42,7 +42,13 @@ function DiagramPlaceholder() {
   );
 }
 
-function ProjectMedia({ project }: { project: ProjectItem }) {
+function ProjectMedia({
+  project,
+  priority = false,
+}: {
+  project: ProjectItem;
+  priority?: boolean;
+}) {
   if (!project.image) return <DiagramPlaceholder />;
 
   return (
@@ -50,7 +56,13 @@ function ProjectMedia({ project }: { project: ProjectItem }) {
       <img
         src={project.image}
         alt={project.imageAlt ?? `Captura de tela do projeto ${project.name}`}
-        loading="lazy"
+        /*
+         * O primeiro projeto fica próximo da dobra em telas baixas: carregar
+         * adiado ali atrasa a imagem que ancora a seção. Do segundo em
+         * diante, `lazy` é o certo.
+         */
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'auto' : 'low'}
         decoding="async"
         width={1600}
         height={1000}
@@ -65,7 +77,6 @@ export function ProjectsSection({ projects }: { projects: ProjectItem[] }) {
   return (
     <Section
       id="projetos"
-      index="02"
       title="Projetos"
       intro="Trabalho pessoal, feito fora do horário de expediente — onde testo decisões de arquitetura e produto sem a restrição de um cliente."
     >
@@ -76,13 +87,8 @@ export function ProjectsSection({ projects }: { projects: ProjectItem[] }) {
             index === 0 ? styles.entryLead : styles.entrySecondary
           }`}
         >
-          <div className={styles.head}>
-            <span className={styles.index}>{project.index}</span>
-            <span className={styles.rule} aria-hidden="true" />
-          </div>
-
           <div className={styles.mediaSlot}>
-            <ProjectMedia project={project} />
+            <ProjectMedia project={project} priority={index === 0} />
           </div>
 
           <div className={styles.body}>

@@ -36,7 +36,7 @@ export function Hero({ info, layers, onNavigate }: HeroProps) {
       <div className={styles.inner}>
         {/* --- Coluna de identidade e posicionamento ---------------------- */}
         <div className={styles.intro}>
-          <div className={`${styles.identity} ${styles.rise}`}>
+          <div className={styles.identity}>
             <div className={styles.avatar}>
               <img
                 src={info.photoUrl}
@@ -70,19 +70,19 @@ export function Hero({ info, layers, onNavigate }: HeroProps) {
             </div>
           </div>
 
-          <p className={`${styles.status} ${styles.rise}`}>
+          <p className={styles.status}>
             <span className={styles.dot} aria-hidden="true" />
             {info.availability}
             <span className={styles.statusMeta}>· {info.location}</span>
           </p>
 
-          <h2 className={`${styles.headline} ${styles.rise2}`}>
+          <h2 className={styles.headline}>
             Construo sistemas que rodam em produção — do desenho da arquitetura ao deploy.
           </h2>
 
-          <p className={`${styles.bio} ${styles.rise2}`}>{info.bio}</p>
+          <p className={styles.bio}>{info.bio}</p>
 
-          <div className={`${styles.actions} ${styles.rise3}`}>
+          <div className={styles.actions}>
             <Button
               as="a"
               href="#projetos"
@@ -107,13 +107,15 @@ export function Hero({ info, layers, onNavigate }: HeroProps) {
         </div>
 
         {/* --- Painel de stack ------------------------------------------- */}
-        <div className={`${styles.panel} ${styles.rise3}`}>
+        <div className={styles.panel}>
           <div className={styles.panelHead}>
             <h2 className={styles.panelTitle}>Stack por camada</h2>
             <p className={styles.panelNote}>
               {layers.reduce((total, layer) => total + layer.items.length, 0)} tecnologias
             </p>
           </div>
+
+          <div className={styles.panelDivider} aria-hidden="true" />
 
           <dl className={styles.layers}>
             {layers.map((layer) => (

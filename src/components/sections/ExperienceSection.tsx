@@ -30,7 +30,6 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
   return (
     <Section
       id="experiencia"
-      index="01"
       title="Experiência"
       intro="Três anos construindo backend, integrações e produto — em consultoria de engenharia, controle de acesso e gestão de ativos."
     >

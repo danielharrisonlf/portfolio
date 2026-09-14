@@ -48,7 +48,6 @@ export interface ExperienceItem {
 
 export interface ProjectItem {
   id: string;
-  index: string;
   name: string;
   /** O problema que o projeto resolve, em uma frase. */
   pitch: string;
