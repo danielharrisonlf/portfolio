@@ -1,7 +1,9 @@
 .button {
   --btn-bg: transparent;
   --btn-fg: var(--fg);
-  --btn-line: var(--line-strong);
+  /* Limite de controle, não divisor: a borda é o que informa que o botão é
+     clicável, então precisa dos 3:1 da WCAG 1.4.11. */
+  --btn-line: var(--line-control);
 
   display: inline-flex;
   align-items: center;

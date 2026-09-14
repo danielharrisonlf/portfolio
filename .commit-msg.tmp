@@ -1,0 +1,46 @@
+redesign: accent âmbar, base neutra e correções da auditoria
+
+Segunda passada sobre o mesmo redesign, a partir do retorno de que a paleta
+não funcionava. A causa era dupla: a cor (ciano-petróleo) e o fato de ela
+quase não aparecer na tela.
+
+IDENTIDADE
+- Accent trocado de ciano-petróleo para âmbar queimado. Referência de dois
+  portfólios de dev bem executados que usam laranja quente como cor única.
+- Base deixou de ser azulada (hue 252) e virou quase neutra com um sopro de
+  calor (hue 62), para casar com o accent. O canvas azul-noite era o que
+  fazia o topo parecer de outro site.
+- Accent passou a CARREGAR PESO, que era o problema real: antes vivia em
+  dois elementos minúsculos do hero. Agora o selo de disponibilidade é um
+  bloco âmbar preenchido e o painel de stack tem um fio de accent na
+  lateral. Numa comparação lado a lado, âmbar e coral ficaram idênticos
+  porque o accent não aparecia em lugar nenhum.
+- Raio máximo caiu de 16px para 10px e o padrão de 10px para 6px — canto
+  muito arredondado é o que dá cara de template de landing page.
+
+CORREÇÕES (todas medidas, nenhuma por impressão)
+- Botão "voltar ao topo" cobria o link "Currículo" do rodapé e engolia o
+  clique em 9 larguras. A causa era horizontal: aumentar o padding-bottom
+  do rodapé não mudava nada. Resolvido na estrutura — "Voltar ao topo"
+  virou item do fluxo do rodapé e o botão flutuante desaparece quando o
+  rodapé entra na tela.
+- Divisores das camadas do hero mediam 1.24:1 no escuro e as cinco camadas
+  liam como uma lista só. Mistura de 55% para 90%.
+- Borda de controle media ~2:1, abaixo dos 3:1 da WCAG 1.4.11. Token
+  `--line-control` separado de `--line`, porque divisor de texto e borda
+  de botão têm exigências opostas.
+- `IconName` colapsava para `string`; com `as const` o type-check pegou na
+  hora um ícone `moon` que eu tinha removido por engano.
+- `useHeaderHeight` removido: media a própria altura e publicava no token
+  que definia essa altura — laço de realimentação de 64px até 195px.
+
+FERRAMENTAS
+- `check:overlap` e `check:interactions` criados. O primeiro existe porque
+  nenhuma outra verificação pega um elemento fixo cobrindo outro controle;
+  o segundo porque clique inerte e erro de console são invisíveis em
+  captura de tela.
+- `try-palette` compara variantes de accent servindo cópias do dist com o
+  CSS sobrescrito, para escolher cor em cima da página real.
+
+Verificação: contraste, responsividade (13 viewports), colisão de fixos
+(19 viewports x 25 posições) e interação — todas passando nos dois temas.

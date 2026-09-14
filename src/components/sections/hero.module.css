@@ -58,7 +58,9 @@
   bottom: -22%;
   width: 38rem;
   height: 26rem;
-  background: radial-gradient(closest-side, var(--canvas-halo), transparent 100%);
+  /* Segundo foco de luz na cor do accent. A versão anterior usava um roxo
+     solto, que não vinha de token nenhum e brigava com a identidade. */
+  background: radial-gradient(closest-side, var(--canvas-glow), transparent 100%);
 }
 
 /* Linha de base: separa o canvas do corpo da página com uma aresta viva. */
@@ -196,18 +198,29 @@
   vertical-align: middle;
 }
 
+/*
+ * Status de disponibilidade. É o elemento com o accent preenchido no hero —
+ * de propósito: é a única informação do topo que muda de estado, e um
+ * preenchimento sólido dá à cor a presença que ela não tinha quando vivia
+ * só num ponto de 6px.
+ */
 .status {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
-  padding: 4px var(--sp-3) 4px var(--sp-2);
-  border: 1px solid var(--canvas-line);
-  border-radius: var(--radius-full);
-  background: color-mix(in oklch, var(--canvas-2) 60%, transparent);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-xs);
+  background: var(--accent-solid);
+  color: var(--accent-on-solid);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
+  font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--canvas-fg-2);
+}
+
+.statusMeta {
+  color: inherit;
+  opacity: 0.72;
 }
 
 .dot {
@@ -215,8 +228,7 @@
   height: 6px;
   flex: none;
   border-radius: 50%;
-  background: var(--canvas-signal);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--canvas-signal) 22%, transparent);
+  background: currentColor;
   animation: pulse 2.6s var(--ease-in-out) infinite;
 }
 
@@ -251,6 +263,7 @@
 /* --- Painel de stack ---------------------------------------------------- */
 
 .panel {
+  position: relative;
   min-width: 0;
   padding: var(--sp-6);
   border: 1px solid var(--canvas-line);
@@ -258,14 +271,34 @@
   background: color-mix(in oklch, var(--canvas-2) 72%, transparent);
   /*
    * A diferença de preenchimento entre o painel e o canvas é pequena de
-   * propósito — um salto forte de cor viraria "card sobre fundo", que é
-   * exatamente o clichê que este layout evita. O que separa o painel é a
-   * combinação de borda, luz interna no topo e o grid do fundo passando
-   * por trás.
+   * propósito — um salto forte de cor viraria "card sobre fundo", que é o
+   * clichê que este layout evita. O que separa o painel é a combinação de
+   * borda, luz interna no topo e o grid do fundo passando por trás.
+   * A barra de accent na lateral é o único ponto de cor forte.
    */
   box-shadow: inset 0 1px 0 color-mix(in oklch, var(--canvas-fg) 7%, transparent);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
+  overflow: hidden;
+}
+
+/*
+ * Fio de accent na lateral do painel. É o que faz a cor existir de verdade
+ * no hero: 3px de altura total, mas 500px de comprimento — presença sem
+ * virar enfeite.
+ */
+.panel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    var(--canvas-accent),
+    color-mix(in oklch, var(--canvas-accent) 25%, transparent)
+  );
 }
 
 .panelHead {
@@ -280,10 +313,10 @@
 .panelTitle {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
-  color: var(--canvas-fg);
+  color: var(--canvas-accent);
 }
 
 .panelNote {
@@ -308,7 +341,12 @@
   gap: var(--sp-4);
   align-items: baseline;
   padding: var(--sp-4) 0;
-  border-bottom: 1px solid color-mix(in oklch, var(--canvas-line) 55%, transparent);
+  /*
+   * A 55% de mistura o divisor media 1.24:1 sobre o painel e as cinco
+   * camadas liam como uma lista só. A 90% ele passa a separar de verdade
+   * sem virar uma linha dura.
+   */
+  border-bottom: 1px solid color-mix(in oklch, var(--canvas-line) 90%, transparent);
 }
 
 .layer:last-child {
@@ -388,7 +426,7 @@
 
 @keyframes pulse {
   50% {
-    box-shadow: 0 0 0 6px color-mix(in oklch, var(--canvas-signal) 0%, transparent);
+    opacity: 0.35;
   }
 }
 

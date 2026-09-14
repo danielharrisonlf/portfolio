@@ -15,7 +15,7 @@ import { dirname, extname, join, normalize, resolve } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..', 'dist');
-const port = Number(process.argv[2] ?? 4173);
+const port = Number(process.argv[2] ?? 4180);
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',

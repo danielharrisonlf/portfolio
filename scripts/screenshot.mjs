@@ -1,9 +1,9 @@
 /**
  * Captura de tela em viewport exata, via CDP.
  *
- * Por que nÃ£o `chrome --headless --window-size=390,844 --screenshot`: nesse
- * caminho o headless nÃ£o respeita a largura pedida abaixo de ~500px e a
- * captura sai cortada, dando a impressÃ£o de transbordo que nÃ£o existe. Aqui
+ * Por que nÒ£o `chrome --headless --window-size=390,844 --screenshot`: nesse
+ * caminho o headless nÒ£o respeita a largura pedida abaixo de ~500px e a
+ * captura sai cortada, dando a impressÒ£o de transbordo que nÒ£o existe. Aqui
  * a viewport vem de `Emulation.setDeviceMetricsOverride`, o mesmo mecanismo
  * do modo responsivo do DevTools.
  *
@@ -26,11 +26,11 @@ const CHROME_CANDIDATES = [
 
 const chromePath = CHROME_CANDIDATES.find((p) => existsSync(p));
 if (!chromePath) {
-  console.error('Chrome/Edge nÃ£o encontrado.');
+  console.error('Chrome/Edge nÒ£o encontrado.');
   process.exit(2);
 }
 
-const url = process.argv[2] ?? 'http://127.0.0.1:4173/';
+const url = process.argv[2] ?? 'http://127.0.0.1:4180/';
 const outDir = resolve(process.argv[3] ?? join(tmpdir(), 'dh-shots'));
 const DEBUG_PORT = 9334;
 
@@ -106,7 +106,7 @@ try {
       await sleep(250);
     }
   }
-  if (!wsUrl) throw new Error('Chrome nÃ£o respondeu na porta de depuraÃ§Ã£o.');
+  if (!wsUrl) throw new Error('Chrome nÒ£o respondeu na porta de depuraÒ§Ò£o.');
 
   const ws = new WebSocket(wsUrl);
   await new Promise((res, rej) => {
@@ -148,7 +148,7 @@ try {
       await send('Page.navigate', { url });
       await sleep(1100);
 
-      // Rola a pÃ¡gina inteira para disparar qualquer revelaÃ§Ã£o por scroll.
+      // Rola a pÒ¡gina inteira para disparar qualquer revelaÒ§Ò£o por scroll.
       for (let step = 1; step <= 10; step++) {
         await send('Runtime.evaluate', {
           expression: `window.scrollTo(0, document.documentElement.scrollHeight * ${step / 10});`,

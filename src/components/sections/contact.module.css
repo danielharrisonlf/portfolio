@@ -78,7 +78,7 @@
   gap: var(--sp-2);
   min-height: 48px;
   padding-inline: var(--sp-5);
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--fg);
@@ -96,9 +96,11 @@
   background: var(--surface);
 }
 
+/* Confirmação de cópia é informação de estado, não identidade — verde, não
+   o accent, senão "copiado" e "clique aqui" ficam com a mesma cor. */
 .copy[data-copied='true'] {
-  border-color: var(--signal-line);
-  color: var(--signal);
+  border-color: var(--ok-line);
+  color: var(--ok);
 }
 
 /* --- Redes -------------------------------------------------------------- */
@@ -116,7 +118,7 @@
   gap: var(--sp-2);
   min-height: 44px;
   padding-inline: var(--sp-4);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-sm);
   font-size: var(--text-sm);
   font-weight: 500;
@@ -162,8 +164,8 @@
   height: 7px;
   flex: none;
   border-radius: 50%;
-  background: var(--signal);
-  box-shadow: 0 0 0 3px var(--signal-tint);
+  background: var(--ok);
+  box-shadow: 0 0 0 3px var(--ok-tint);
 }
 
 /* ==========================================================================

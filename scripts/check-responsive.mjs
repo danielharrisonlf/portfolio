@@ -5,13 +5,13 @@
  * Por que não `--dump-dom` + `--window-size`: o headless não abre janela com
  * menos de ~500px, e o `<meta name="viewport">` só é aplicado quando o
  * navegador está de fato em modo dispositivo. Sem emulação, um teste "a
- * 320px" mede 882px e passa sem ter testado nada — foi exatamente o que
+ * 320px" mede 882px e passa sem ter testado nada � foi exatamente o que
  * aconteceu na primeira versão deste script.
  *
  * Aqui a viewport é imposta por `Emulation.setDeviceMetricsOverride`, que é
  * o mesmo caminho usado pelo modo responsivo do DevTools.
  *
- *   node scripts/serve-dist.mjs 4173      # em outro terminal
+ *   node scripts/serve-dist.mjs 4180      # em outro terminal
  *   node scripts/check-responsive.mjs
  */
 
@@ -36,7 +36,7 @@ if (!chromePath) {
   process.exit(2);
 }
 
-const ORIGIN = process.env.PREVIEW_URL ?? 'http://127.0.0.1:4173';
+const ORIGIN = process.env.PREVIEW_URL ?? 'http://127.0.0.1:4180';
 const DEBUG_PORT = 9333;
 
 const VIEWPORTS = [
@@ -95,7 +95,7 @@ const PROBE = `(() => {
 
     /*
      * A área clicável não é só a caixa do elemento: um pseudo-elemento
-     * posicionado em absolute pode estendê-la bastante — é a técnica usada
+     * posicionado em absolute pode estendê-la bastante � é a técnica usada
      * nos links dentro de parágrafos, onde a caixa de texto tem 16px de
      * altura. Medir só o rect acusaria um alvo pequeno que não existe.
      */
@@ -176,7 +176,16 @@ const PROBE = `(() => {
       links: document.querySelectorAll('a[href]').length,
       buttons: document.querySelectorAll('button').length,
       imgNoAlt: document.querySelectorAll('img:not([alt])').length,
-      iconOnlyNoLabel: document.querySelectorAll('button:not([aria-label]):not([title])').length,
+      /*
+       * S� � falha quando o bot�o N�O TEM NOME ACESS�VEL. Bot�o com texto
+       * vis�vel j� tem nome  exigir aria-label dele � falso positivo, e era
+       * o que este contador fazia (acusava o "Voltar ao topo" do rodap�).
+       * O caso real � o bot�o cujo �nico conte�do � um �cone.
+       */
+      iconOnlyNoLabel: [...document.querySelectorAll('button')].filter((b) => {
+        if (b.getAttribute('aria-label') || b.getAttribute('title')) return false;
+        return (b.textContent || '').trim().length === 0 && b.querySelector('svg');
+      }).length,
       landmarks: document.querySelectorAll('header, main, footer, nav').length,
       navs: document.querySelectorAll('nav').length,
       progressbar: document.querySelectorAll('[role="progressbar"]').length,
@@ -284,7 +293,7 @@ try {
       });
 
       /*
-       * O tema é fixado antes da navegação via localStorage — é a mesma
+       * O tema é fixado antes da navegação via localStorage � é a mesma
        * chave que o script inline do index.html lê. Fazer isso pela URL
        * exigiria suporte no app só para o teste.
        */
@@ -299,7 +308,7 @@ try {
       /*
        * Rola até o fim antes de medir: conteúdo revelado por
        * IntersectionObserver só existe no layout depois de aparecer, e um
-       * elemento com `opacity: 0` ainda ocupa espaço — mas seções que nunca
+       * elemento com `opacity: 0` ainda ocupa espaço � mas seções que nunca
        * foram reveladas podem ter transform pendente.
        */
       for (let step = 1; step <= SCROLL_STEPS; step++) {

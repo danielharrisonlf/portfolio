@@ -73,10 +73,7 @@ export function Hero({ info, layers, onNavigate }: HeroProps) {
           <p className={`${styles.status} ${styles.rise}`}>
             <span className={styles.dot} aria-hidden="true" />
             {info.availability}
-            <span aria-hidden="true" style={{ opacity: 0.4 }}>
-              ·
-            </span>
-            {info.location}
+            <span className={styles.statusMeta}>· {info.location}</span>
           </p>
 
           <h2 className={`${styles.headline} ${styles.rise2}`}>

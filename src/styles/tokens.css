@@ -65,29 +65,29 @@
    * Ritmo vertical das seções. Fluido: não há degrau de breakpoint.
    * O teto é contido de propósito — com 9rem a página passava de 7200px no
    * desktop, e um portfólio de cinco seções não pode custar isso em rolagem.
-   * 104px de respiro por lado já separa com folga.
    */
   --section-y: clamp(3.5rem, 2.5rem + 4.5vw, 6.5rem);
 
   /* --- Layout ----------------------------------------------------------- */
   --container: 1200px;
-  /* O hero usa a largura maior, porque a grade de stack precisa de espaço
-     para respirar em duas colunas. */
+  /* O hero usa a largura maior, porque a grade de stack precisa de espaço. */
   --container-wide: 1440px;
   --gutter: clamp(1.25rem, 0.5rem + 3.2vw, 3.5rem);
   /* Altura da barra de navegação. É uma CONSTANTE, não uma medida.
      A tentação é medir com ResizeObserver e publicar o valor aqui — não
-     faça: como `.inner` tem `height: var(--header-h)`, medir e escrever no
-     mesmo token cria um laço de realimentação (o header crescia a cada
-     frame, de 64px até 195px). Constante + `min-height` na barra dá o mesmo
-     resultado sem laço. */
+     faça: como a barra tem `min-height: var(--header-h)`, medir e escrever
+     no mesmo token cria um laço de realimentação (o header crescia de 64px
+     até 195px). Constante + min-height dá o mesmo sem laço. */
   --header-h: 64px;
 
-  /* --- Raio ------------------------------------------------------------- */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  /* --- Raio --------------------------------------------------------------
+     Escala curta e seca, de propósito. Canto muito arredondado é o que dá
+     aparência de template de landing page; um register técnico pede arestas
+     quase vivas. O maior raio do sistema é 10px, e só em superfície grande. */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
   --radius-full: 999px;
 
   /* --- Movimento -------------------------------------------------------- */
@@ -102,89 +102,131 @@
 
 /* ==========================================================================
    Tema claro
+   --------------------------------------------------------------------------
+   Base neutra quase sem matiz. O cinza levemente quente (hue 75, chroma
+   0.002) evita o cinza-azulado frio, que é o padrão de qualquer UI kit.
    ========================================================================== */
 :root,
 [data-theme='light'] {
-  --bg: oklch(99.2% 0.0015 250);
-  --surface: oklch(97.4% 0.0025 250);
+  --bg: oklch(98.8% 0.002 75);
+  --surface: oklch(96.6% 0.003 75);
 
-  --fg: oklch(20% 0.012 250);
-  --fg-2: oklch(38% 0.011 250);
-  --muted: oklch(48% 0.011 250);
-  --faint: oklch(62% 0.009 250);
+  --fg: oklch(19% 0.006 60);
+  --fg-2: oklch(37% 0.006 60);
+  --muted: oklch(47% 0.006 60);
+  --faint: oklch(60% 0.005 60);
 
-  --line: oklch(88.5% 0.005 250);
-  --line-strong: oklch(78% 0.008 250);
+  --line: oklch(88% 0.004 70);
+  --line-strong: oklch(76% 0.006 65);
+  /*
+   * Limite de CONTROLE — a borda que desenha um botão ou campo.
+   * Existe separado de --line porque as duas têm exigências opostas: um
+   * divisor de texto deve ser discreto, mas a borda de um controle é o que
+   * informa que aquilo é clicável, e a WCAG 1.4.11 pede 3:1 para elemento
+   * de interface. Com um token só, agradar um significava reprovar o outro.
+   * Calibrado para cruzar 3:1 sobre --bg.
+   */
+  --line-control: oklch(66% 0.008 65);
 
-  --accent: oklch(45% 0.108 215);
-  --accent-solid: oklch(45% 0.108 215);
-  --accent-on-solid: oklch(99% 0.004 215);
-  --accent-tint: oklch(45% 0.108 215 / 0.08);
-  --accent-line: oklch(45% 0.108 215 / 0.32);
+  /*
+   * ACCENT — âmbar queimado.
+   * Escolhido por três razões: é quente (destaca numa página neutra fria,
+   * ao contrário de mais um azul), é raro em portfólio de dev (o default do
+   * "gerado por IA" é roxo ou azul-elétrico), e o matiz 62 é o último ponto
+   * antes de virar laranja — o que mantém o ar de instrumento em vez de
+   * botão de promoção.
+   */
+  --accent: oklch(50% 0.125 62);
+  --accent-solid: oklch(47% 0.125 58);
+  --accent-on-solid: oklch(99% 0.01 62);
+  --accent-tint: oklch(50% 0.125 62 / 0.09);
+  --accent-line: oklch(50% 0.125 62 / 0.34);
 
-  /* Sinal = atenção/estado. Só aparece onde significa algo. */
-  --signal: oklch(52% 0.13 62);
-  --signal-tint: oklch(52% 0.13 62 / 0.1);
-  --signal-line: oklch(52% 0.13 62 / 0.34);
+  /* Estados semânticos. Separados do accent de propósito: se o accent
+     também fosse a cor de "sucesso", erro e sucesso competiriam com a
+     identidade em vez de informar. */
+  --ok: oklch(48% 0.13 152);
+  --ok-tint: oklch(48% 0.13 152 / 0.1);
+  --ok-line: oklch(48% 0.13 152 / 0.36);
+  --warn: oklch(55% 0.14 75);
+  --warn-tint: oklch(55% 0.14 75 / 0.12);
+  --warn-line: oklch(55% 0.14 75 / 0.4);
+  --danger: oklch(52% 0.19 27);
 
-  /* Tinta do canvas do hero. No claro ele é um azul-noite: ancora o topo
-     da página e faz o contraste de "instrumento" sem virar um bloco preto. */
-  --canvas: oklch(21% 0.032 252);
-  --canvas-2: oklch(27% 0.036 252);
-  --canvas-fg: oklch(96% 0.008 250);
-  --canvas-fg-2: oklch(80% 0.014 250);
-  --canvas-muted: oklch(70% 0.016 250);
-  --canvas-line: oklch(38% 0.03 252);
-  --canvas-grid: oklch(96% 0.01 250 / 0.055);
-  --canvas-accent: oklch(78% 0.12 205);
-  --canvas-accent-tint: oklch(78% 0.12 205 / 0.12);
-  --canvas-signal: oklch(80% 0.13 68);
-  --canvas-halo: oklch(62% 0.14 285 / 0.14);
+  /*
+   * Canvas do hero. Quase preto, com um sopro de calor (hue 62) para casar
+   * com o accent. A versão anterior usava azul-noite, que fazia o comentário
+   * "o topo é azul e o resto é branco" — dois sites colados.
+   */
+  --canvas: oklch(16.5% 0.007 62);
+  /*
+   * O painel precisa se separar do canvas sozinho. Como ele entra na tela
+   * como `color-mix(canvas-2 72%, transparent)`, o valor efetivo é ~72% do
+   * caminho entre os dois — então o token já sai bem mais claro para
+   * compensar. Medido depois da composição (não nos tokens crus).
+   */
+  --canvas-2: oklch(31% 0.013 62);
+  --canvas-fg: oklch(96.5% 0.004 70);
+  --canvas-fg-2: oklch(81% 0.007 68);
+  --canvas-muted: oklch(69% 0.008 66);
+  --canvas-line: oklch(40% 0.012 62);
+  --canvas-grid: oklch(96% 0.008 70 / 0.06);
+  --canvas-accent: oklch(80% 0.14 66);
+  --canvas-accent-tint: oklch(80% 0.14 66 / 0.14);
+  --canvas-glow: oklch(62% 0.13 60 / 0.15);
 
-  --shadow-md: 0 12px 32px -18px oklch(20% 0.02 250 / 0.24);
+  --shadow-md: 0 12px 32px -18px oklch(19% 0.02 60 / 0.22);
 }
 
 /* ==========================================================================
    Tema escuro
+   --------------------------------------------------------------------------
+   O site é dark-first: o tema escuro é o desenho canônico, e o claro é a
+   variante. O fundo é quase neutro, sem o azul que a versão anterior tinha.
    ========================================================================== */
 [data-theme='dark'] {
-  --bg: oklch(15.5% 0.008 252);
-  --surface: oklch(19.2% 0.009 252);
+  --bg: oklch(14.5% 0.006 62);
+  --surface: oklch(18.5% 0.007 62);
 
-  --fg: oklch(95.5% 0.005 250);
-  --fg-2: oklch(82% 0.008 250);
-  --muted: oklch(65% 0.011 250);
-  --faint: oklch(52% 0.011 250);
+  --fg: oklch(96% 0.004 70);
+  --fg-2: oklch(83% 0.006 68);
+  --muted: oklch(66% 0.008 66);
+  --faint: oklch(52% 0.008 64);
 
-  --line: oklch(28.5% 0.011 252);
-  --line-strong: oklch(38% 0.015 252);
+  --line: oklch(27.5% 0.008 62);
+  --line-strong: oklch(38% 0.011 62);
+  /* Ver a explicação no tema claro: 3:1 medido sobre --bg. */
+  --line-control: oklch(50% 0.014 62);
 
-  --accent: oklch(76% 0.115 205);
-  --accent-solid: oklch(76% 0.115 205);
-  --accent-on-solid: oklch(16% 0.02 230);
-  --accent-tint: oklch(76% 0.115 205 / 0.12);
-  --accent-line: oklch(76% 0.115 205 / 0.34);
+  --accent: oklch(79% 0.135 68);
+  --accent-solid: oklch(79% 0.135 68);
+  --accent-on-solid: oklch(18% 0.03 60);
+  --accent-tint: oklch(79% 0.135 68 / 0.13);
+  --accent-line: oklch(79% 0.135 68 / 0.36);
 
-  --signal: oklch(79% 0.14 72);
-  --signal-tint: oklch(79% 0.14 72 / 0.13);
-  --signal-line: oklch(79% 0.14 72 / 0.36);
+  --ok: oklch(78% 0.15 152);
+  --ok-tint: oklch(78% 0.15 152 / 0.13);
+  --ok-line: oklch(78% 0.15 152 / 0.38);
+  --warn: oklch(82% 0.14 78);
+  --warn-tint: oklch(82% 0.14 78 / 0.13);
+  --warn-line: oklch(82% 0.14 78 / 0.4);
+  --danger: oklch(70% 0.17 27);
 
-  /* No escuro o canvas é um degrau acima do fundo, não um bloco de outra
-     família: a página inteira já é escura, então o hero se distingue por
-     densidade (grid, glow), não por salto de cor. */
-  --canvas: oklch(12% 0.012 252);
-  --canvas-2: oklch(19% 0.016 252);
-  --canvas-fg: oklch(96.5% 0.005 250);
-  --canvas-fg-2: oklch(80% 0.01 250);
-  --canvas-muted: oklch(64% 0.013 250);
-  --canvas-line: oklch(30% 0.014 252);
-  --canvas-grid: oklch(96% 0.01 250 / 0.04);
-  --canvas-accent: oklch(78% 0.115 205);
-  --canvas-accent-tint: oklch(78% 0.115 205 / 0.13);
-  --canvas-signal: oklch(80% 0.14 72);
-  --canvas-halo: oklch(58% 0.15 285 / 0.16);
+  /* No escuro o canvas é um degrau ABAIXO do fundo, não acima: o fundo já
+     é escuro, então o hero se separa por ser mais profundo e mais denso
+     (grid, glow), não por ser mais claro. */
+  --canvas: oklch(11.5% 0.006 62);
+  --canvas-2: oklch(25% 0.012 62);
+  --canvas-fg: oklch(97% 0.004 70);
+  --canvas-fg-2: oklch(81% 0.007 68);
+  --canvas-muted: oklch(65% 0.009 66);
+  --canvas-line: oklch(33% 0.012 62);
+  --canvas-grid: oklch(96% 0.008 70 / 0.045);
+  --canvas-accent: oklch(80% 0.14 68);
+  --canvas-accent-tint: oklch(80% 0.14 68 / 0.14);
+  --canvas-glow: oklch(60% 0.13 62 / 0.16);
 
-  --shadow-md: 0 16px 40px -22px oklch(0% 0 0 / 0.7);
+  --shadow-md: 0 16px 40px -22px oklch(0% 0 0 / 0.72);
 
   color-scheme: dark;
 }

@@ -9,8 +9,12 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "serve:dist": "node scripts/serve-dist.mjs",
+    "check": "pnpm check:contrast && pnpm check:responsive && pnpm check:overlap && pnpm check:interactions",
     "check:contrast": "node scripts/check-contrast.mjs",
-    "check:responsive": "node scripts/check-responsive.mjs"
+    "check:responsive": "node scripts/check-responsive.mjs",
+    "check:overlap": "node scripts/check-fixed-overlap.mjs",
+    "check:interactions": "node scripts/check-interactions.mjs",
+    "shots": "node scripts/screenshot.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

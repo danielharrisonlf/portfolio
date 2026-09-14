@@ -71,13 +71,17 @@
 
 /*
  * O estado "em andamento" e o "transferido" tinham a mesma cor na versão
- * anterior, dando o mesmo peso a significados opostos. Agora só o que
- * está em curso recebe cor; o encerrado fica neutro.
+ * anterior, dando o mesmo peso a significados opostos. Agora só o que está
+ * em curso recebe cor; o encerrado fica neutro.
+ *
+ * Verde e não âmbar: aqui a cor é INFORMAÇÃO (está cursando), não identidade.
+ * Se usasse o accent, "em andamento" e "destaque de marca" virariam a mesma
+ * coisa e o leitor perderia a distinção.
  */
 .statusActive {
-  border-color: var(--signal-line);
-  background: var(--signal-tint);
-  color: var(--signal);
+  border-color: var(--ok-line);
+  background: var(--ok-tint);
+  color: var(--ok);
 }
 
 .statusDot {

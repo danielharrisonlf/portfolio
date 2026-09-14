@@ -11,9 +11,7 @@
   gap: var(--sp-4) var(--sp-8);
   max-width: var(--container);
   margin-inline: auto;
-  padding: var(--sp-8) var(--gutter);
-  /* Folga para o botão "voltar ao topo" não encostar no conteúdo. */
-  padding-bottom: var(--sp-10);
+  padding: var(--sp-8) var(--gutter) var(--sp-10);
 }
 
 .signature {
@@ -35,11 +33,19 @@
   color: var(--faint);
 }
 
+/* --- Links do rodapé ---------------------------------------------------- */
+
 .nav {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-1) var(--sp-4);
+  /*
+   * Faixa de segurança: o botão flutuante ainda pode estar visível no
+   * instante em que o rodapé começa a aparecer. 60px garantem que nenhum
+   * link nasça embaixo dele antes de o observer escondê-lo.
+   */
+  padding-right: 60px;
 }
 
 .link {
@@ -58,10 +64,33 @@
   color: var(--fg);
 }
 
+/*
+ * "Voltar ao topo" é o último item da nav, dentro do fluxo. Antes era um
+ * botão fixo no canto — que cobria o link "Currículo" e engolia o clique
+ * em 9 larguras. Aqui ele não pode colidir com nada, porque ocupa lugar.
+ */
+.toTopLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 36px;
+  padding-inline: var(--sp-2);
+  margin-inline: calc(var(--sp-2) * -1);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--muted);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.toTopLink:hover {
+  color: var(--accent);
+}
+
 /* ==========================================================================
-   Botão "voltar ao topo"
-   Só existe depois que a pessoa passou do hero: no topo da página ele não
-   teria função nenhuma e ainda competiria com o conteúdo.
+   Atalho flutuante
+   Só existe longe do rodapé. Quando o rodapé entra na tela ele sai — o
+   atalho de dentro do rodapé assume, e assim um botão fixo nunca fica sobre
+   conteúdo clicável.
    ========================================================================== */
 
 .toTop {
@@ -73,7 +102,7 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-full);
   background: color-mix(in oklch, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
@@ -82,6 +111,7 @@
   box-shadow: var(--shadow-md);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transform: translateY(8px);
   transition:
     opacity var(--dur-base) var(--ease-out),
@@ -94,6 +124,7 @@
 .toTop[data-visible='true'] {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
   transform: translateY(0);
 }
 
@@ -106,10 +137,16 @@
   .inner {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--sp-6);
+    gap: var(--sp-5);
   }
 
+  /*
+   * Empilhado, a nav ocupa a largura toda — então não há "faixa da direita"
+   * para reservar e o padding some. Como o botão flutuante desaparece assim
+   * que o rodapé aparece, não sobra nada sobre os links.
+   */
   .nav {
+    padding-right: 0;
     gap: var(--sp-2) var(--sp-5);
   }
 }

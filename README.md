@@ -15,22 +15,42 @@ pnpm serve:dist         # serve o dist/ sem watcher
 
 ## Verificações automatizadas
 
-Três scripts que rodam contra o build e medem o que o `tsc` não vê.
-Precisam de `pnpm build` antes (o de responsividade também precisa do
-`serve:dist` no ar).
+Seis scripts que rodam contra o build e medem o que o `tsc` não vê. Todos
+precisam de `pnpm build` antes, e os que abrem navegador precisam do
+`pnpm serve:dist` no ar.
 
 ```bash
-pnpm check:contrast     # contraste WCAG de todos os pares de cor, nos 2 temas
-pnpm check:responsive   # 13 viewports × 2 temas: transbordo, alvos de toque,
-                        # hierarquia de títulos, estrutura
-node scripts/screenshot.mjs [url] [pasta]   # capturas em viewport exata via CDP
+pnpm build
+pnpm serve:dist          # em outro terminal, sobe o dist/ na 4180
+
+pnpm check               # roda as quatro verificações em sequência
+pnpm check:contrast      # contraste WCAG de todos os pares de cor, nos 2 temas
+pnpm check:responsive    # 13 viewports × 2 temas: transbordo, alvos de toque,
+                         # hierarquia de títulos, estrutura
+pnpm check:overlap       # 19 viewports × 2 temas × 25 posições de rolagem:
+                         # algum controle fixo cobrindo outro controle?
+pnpm check:interactions  # abre menu, troca tema, navega, dá ESC, copia
+pnpm shots               # capturas em viewport exata
 ```
 
-`check:responsive` e `screenshot.mjs` falam com o Chrome pelo **DevTools
-Protocol** em vez de usar `--window-size`. Isso não é preferência: o headless
-não abre janela com menos de ~500px, então um teste "a 320px" por
-`--window-size` mede 882px e passa sem ter testado nada. A viewport real vem
-de `Emulation.setDeviceMetricsOverride`.
+Cada um existe por causa de um defeito concreto que os outros não pegavam:
+
+- **`check:overlap`** nasceu de um botão "voltar ao topo" que cobria o link
+  "Currículo" do rodapé e engolia o clique em 9 larguras. Transbordo era
+  zero, o layout estava correto, e o culpado estava *por cima*. A única
+  verificação que pega isso é `elementFromPoint` no centro do alvo.
+- **`check:interactions`** existe porque clique que não faz nada, estado
+  que trava e erro de console não aparecem em captura de tela nem em
+  medição de layout.
+- **`check:responsive`** e **`shots`** falam com o Chrome pelo **DevTools
+  Protocol**, não por `--window-size`. Isso não é preferência: o headless
+  não abre janela com menos de ~500px, então um teste "a 320px" por
+  `--window-size` mede 882px e passa sem ter testado nada.
+
+O `try-palette.mjs` compara variantes de accent (veja `VARIANTS`) servindo
+cópias do `dist/` com um bloco `:root` sobrescrito no fim do CSS. Foi assim
+que a paleta âmbar foi escolhida em cima da página real, não numa amostra
+de cor solta.
 
 ## Arquitetura
 

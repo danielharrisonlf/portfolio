@@ -61,9 +61,9 @@
 }
 
 .markerCurrent {
-  border-color: var(--signal);
-  background: var(--signal);
-  box-shadow: 0 0 0 3px var(--signal-tint);
+  border-color: var(--ok);
+  background: var(--ok);
+  box-shadow: 0 0 0 3px var(--ok-tint);
 }
 
 /* --- Conteúdo ----------------------------------------------------------- */
@@ -161,7 +161,8 @@
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: var(--signal);
+  /* O número É a afirmação principal do bloco: leva o accent. */
+  color: var(--accent);
 }
 
 .metricLabel {
