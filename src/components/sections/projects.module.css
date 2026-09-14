@@ -1,0 +1,347 @@
+/* ==========================================================================
+   Projetos
+   Sem grade de cards. Dois projetos de pesos diferentes não podem ocupar
+   dois retângulos idênticos — isso comunica que são equivalentes, e some
+   com a hierarquia. Aqui o primeiro é uma entrada larga; o segundo entra
+   deslocado, com a imagem menor. A assimetria é o que cria a leitura.
+   ========================================================================== */
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry {
+  display: grid;
+  gap: var(--sp-6);
+  padding-block: var(--sp-10);
+  border-top: 1px solid var(--line);
+}
+
+.entry:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.entry:last-child {
+  padding-bottom: 0;
+}
+
+/*
+ * Três faixas: o cabeçalho ocupa a largura toda; abaixo, mídia e texto
+ * dividem a linha. A coluna de texto é maior que a da imagem de propósito —
+ * é ela que carrega a informação, e uma coluna estreita de texto ao lado de
+ * uma imagem larga inverte a hierarquia.
+ */
+.entryLead {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  column-gap: var(--sp-12);
+  align-items: start;
+}
+
+/* A mídia vem DEPOIS do texto no DOM; aqui ela volta para a esquerda. */
+.entryLead .mediaSlot {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.entryLead .body {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+/*
+ * Segundo projeto: deslocado para a direita e mais estreito. O recuo é o
+ * que faz a página respirar depois de um bloco largo, em vez de repetir
+ * o mesmo compasso.
+ */
+.entrySecondary {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-8);
+  margin-left: auto;
+  max-width: 1000px;
+}
+
+/*
+ * No segundo projeto a mídia é menor que o texto: o peso visual já foi
+ * gasto no primeiro, e repetir a mesma proporção anularia a hierarquia
+ * entre os dois. A captura real tem prioridade sobre o placeholder.
+ */
+.entrySecondary .mediaSlot {
+  max-width: 640px;
+}
+
+/* --- Cabeçalho da entrada ----------------------------------------------- */
+
+/*
+ * Índice + régua. A régua dá o ponto de referência horizontal: sem ela, o
+ * deslocamento da segunda entrada leria como desalinhamento em vez de
+ * decisão.
+ */
+.head {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.index {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--faint);
+  flex: none;
+}
+
+.rule {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* --- Mídia -------------------------------------------------------------- */
+
+.mediaSlot {
+  min-width: 0;
+}
+
+.media {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  /* 16:10 é a proporção de um dashboard; o `cover` no topo mostra os
+     painéis em vez de cortar para o meio da tela. */
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.entry:hover .media img {
+  transform: scale(1.015);
+}
+
+/*
+ * Placeholder para projeto sem captura. Desenha um diagrama de nós — o
+ * vocabulário visual do site — em vez de um retângulo com a inicial, que
+ * lia como imagem quebrada.
+ */
+.placeholder {
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-items: center;
+  /*
+   * O diagrama precisa ser legível, não um fantasma. A primeira versão
+   * usava accent a 55% de opacidade sobre um tint de 8% — no tema claro o
+   * desenho praticamente desaparecia e o card lia como imagem quebrada, que
+   * é exatamente o que o placeholder deveria evitar.
+   */
+  background:
+    radial-gradient(85% 85% at 20% 8%, var(--accent-tint), transparent 68%),
+    var(--surface);
+  border-color: var(--line-strong);
+}
+
+.placeholder svg {
+  width: min(62%, 280px);
+  height: auto;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+/* --- Conteúdo ----------------------------------------------------------- */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  min-width: 0;
+}
+
+.entrySecondary .body {
+  gap: var(--sp-4);
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-snug);
+  color: var(--fg);
+}
+
+.pitch {
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: 500;
+  color: var(--accent);
+  max-width: 46ch;
+}
+
+.desc {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.highlights {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding-top: var(--sp-1);
+}
+
+.highlight {
+  position: relative;
+  padding-left: var(--sp-5);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--fg-2);
+}
+
+.highlight::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.68em;
+  width: 6px;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* --- Rodapé da entrada -------------------------------------------------- */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-top: var(--sp-2);
+}
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.stackItem {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--fg-2);
+  padding: 3px var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  white-space: nowrap;
+}
+
+.links {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 36px;
+  padding-inline: var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-sm);
+  font-weight: 550;
+  color: var(--fg);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.link:hover {
+  background: var(--fg);
+  border-color: var(--fg);
+  color: var(--bg);
+}
+
+/* Nota de rodapé da lista: existe porque projeto sem link é alegação, e
+   é melhor dizer isso do que deixar o vazio sem explicação. */
+.note {
+  margin-top: var(--sp-10);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--faint);
+  max-width: 62ch;
+}
+
+.note a {
+  position: relative;
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+
+/*
+ * Link dentro de um parágrafo: a caixa de texto tem 16px de altura, o que
+ * reprova qualquer mínimo de alvo de toque. O pseudo-elemento estende a
+ * área clicável para 40px sem mexer no fluxo do texto nem no desenho.
+ */
+.note a::after {
+  content: '';
+  position: absolute;
+  inset: -12px -8px;
+}
+
+.note a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .entryLead,
+  .entrySecondary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-6);
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  /* No empilhado, a mídia sempre vem primeiro — a ordem lógica de leitura
+     é imagem, depois texto, e o grid não deve decidir isso por acaso. */
+  .mediaSlot {
+    order: -1;
+  }
+
+  .entrySecondary .mediaSlot {
+    max-width: 100%;
+  }
+
+  .entry {
+    padding-block: var(--sp-8);
+  }
+}
+
+@media (max-width: 560px) {
+  .foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: var(--text-lg);
+  }
+}

@@ -1,0 +1,190 @@
+/* ==========================================================================
+   Design tokens
+   --------------------------------------------------------------------------
+   Duas camadas, nesta ordem:
+
+   1. PRIMITIVOS — escalas sem significado semântico: tipografia, espaço,
+      raio, movimento, largura de container. Ninguém escreve componente
+      contra eles.
+   2. SEMÂNTICOS (--bg, --fg, --line, --accent, --canvas-*) — o que os
+      componentes usam. É esta camada que troca de valor entre os temas.
+
+   A regra que mantém isso saudável: componente nunca referencia primitivo.
+   Assim, mudar a identidade = mexer só neste arquivo.
+   ========================================================================== */
+
+:root {
+  /* --- Tipografia ------------------------------------------------------ */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  /* Stack de sistema para mono. Zero requisição, renderização consistente,
+     e o desenho é sóbrio — que é o ponto. */
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', 'JetBrains Mono',
+    'Roboto Mono', Menlo, Consolas, monospace;
+
+  --text-2xs: 0.6875rem; /* 11px — micro-rótulos */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.8125rem; /* 13px */
+  --text-base: 0.9375rem; /* 15px — leitura corrida */
+  --text-md: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px — título de item */
+  --text-xl: clamp(1.375rem, 1.2rem + 0.8vw, 1.625rem); /* 22→26 */
+
+  /*
+   * As escalas de display são calculadas para a PIOR palavra caber em 320px
+   * de viewport, não para a média. "produção" tem 8 caracteres: a 39px ela
+   * mede ~192px, e o container a 320px oferece 280px. Títulos em português
+   * são longos — um clamp generoso estoura antes do breakpoint chegar.
+   */
+  --text-2xl: clamp(1.5rem, 1.25rem + 1.1vw, 2rem); /* 24→32 */
+  --text-3xl: clamp(2rem, 1.5rem + 2.2vw, 3rem); /* 32→48 */
+
+  --leading-tight: 1.06;
+  --leading-snug: 1.18;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.68;
+
+  --tracking-tight: -0.022em;
+  --tracking-snug: -0.012em;
+  --tracking-wide: 0.06em;
+  --tracking-wider: 0.14em;
+
+  /* --- Espaço (escala 4pt) --------------------------------------------- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+
+  /*
+   * Ritmo vertical das seções. Fluido: não há degrau de breakpoint.
+   * O teto é contido de propósito — com 9rem a página passava de 7200px no
+   * desktop, e um portfólio de cinco seções não pode custar isso em rolagem.
+   * 104px de respiro por lado já separa com folga.
+   */
+  --section-y: clamp(3.5rem, 2.5rem + 4.5vw, 6.5rem);
+
+  /* --- Layout ----------------------------------------------------------- */
+  --container: 1200px;
+  /* O hero usa a largura maior, porque a grade de stack precisa de espaço
+     para respirar em duas colunas. */
+  --container-wide: 1440px;
+  --gutter: clamp(1.25rem, 0.5rem + 3.2vw, 3.5rem);
+  /* Altura da barra de navegação. É uma CONSTANTE, não uma medida.
+     A tentação é medir com ResizeObserver e publicar o valor aqui — não
+     faça: como `.inner` tem `height: var(--header-h)`, medir e escrever no
+     mesmo token cria um laço de realimentação (o header crescia a cada
+     frame, de 64px até 195px). Constante + `min-height` na barra dá o mesmo
+     resultado sem laço. */
+  --header-h: 64px;
+
+  /* --- Raio ------------------------------------------------------------- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* --- Movimento -------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 130ms;
+  --dur-base: 220ms;
+  --dur-slow: 520ms;
+
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   Tema claro
+   ========================================================================== */
+:root,
+[data-theme='light'] {
+  --bg: oklch(99.2% 0.0015 250);
+  --surface: oklch(97.4% 0.0025 250);
+
+  --fg: oklch(20% 0.012 250);
+  --fg-2: oklch(38% 0.011 250);
+  --muted: oklch(48% 0.011 250);
+  --faint: oklch(62% 0.009 250);
+
+  --line: oklch(88.5% 0.005 250);
+  --line-strong: oklch(78% 0.008 250);
+
+  --accent: oklch(45% 0.108 215);
+  --accent-solid: oklch(45% 0.108 215);
+  --accent-on-solid: oklch(99% 0.004 215);
+  --accent-tint: oklch(45% 0.108 215 / 0.08);
+  --accent-line: oklch(45% 0.108 215 / 0.32);
+
+  /* Sinal = atenção/estado. Só aparece onde significa algo. */
+  --signal: oklch(52% 0.13 62);
+  --signal-tint: oklch(52% 0.13 62 / 0.1);
+  --signal-line: oklch(52% 0.13 62 / 0.34);
+
+  /* Tinta do canvas do hero. No claro ele é um azul-noite: ancora o topo
+     da página e faz o contraste de "instrumento" sem virar um bloco preto. */
+  --canvas: oklch(21% 0.032 252);
+  --canvas-2: oklch(27% 0.036 252);
+  --canvas-fg: oklch(96% 0.008 250);
+  --canvas-fg-2: oklch(80% 0.014 250);
+  --canvas-muted: oklch(70% 0.016 250);
+  --canvas-line: oklch(38% 0.03 252);
+  --canvas-grid: oklch(96% 0.01 250 / 0.055);
+  --canvas-accent: oklch(78% 0.12 205);
+  --canvas-accent-tint: oklch(78% 0.12 205 / 0.12);
+  --canvas-signal: oklch(80% 0.13 68);
+  --canvas-halo: oklch(62% 0.14 285 / 0.14);
+
+  --shadow-md: 0 12px 32px -18px oklch(20% 0.02 250 / 0.24);
+}
+
+/* ==========================================================================
+   Tema escuro
+   ========================================================================== */
+[data-theme='dark'] {
+  --bg: oklch(15.5% 0.008 252);
+  --surface: oklch(19.2% 0.009 252);
+
+  --fg: oklch(95.5% 0.005 250);
+  --fg-2: oklch(82% 0.008 250);
+  --muted: oklch(65% 0.011 250);
+  --faint: oklch(52% 0.011 250);
+
+  --line: oklch(28.5% 0.011 252);
+  --line-strong: oklch(38% 0.015 252);
+
+  --accent: oklch(76% 0.115 205);
+  --accent-solid: oklch(76% 0.115 205);
+  --accent-on-solid: oklch(16% 0.02 230);
+  --accent-tint: oklch(76% 0.115 205 / 0.12);
+  --accent-line: oklch(76% 0.115 205 / 0.34);
+
+  --signal: oklch(79% 0.14 72);
+  --signal-tint: oklch(79% 0.14 72 / 0.13);
+  --signal-line: oklch(79% 0.14 72 / 0.36);
+
+  /* No escuro o canvas é um degrau acima do fundo, não um bloco de outra
+     família: a página inteira já é escura, então o hero se distingue por
+     densidade (grid, glow), não por salto de cor. */
+  --canvas: oklch(12% 0.012 252);
+  --canvas-2: oklch(19% 0.016 252);
+  --canvas-fg: oklch(96.5% 0.005 250);
+  --canvas-fg-2: oklch(80% 0.01 250);
+  --canvas-muted: oklch(64% 0.013 250);
+  --canvas-line: oklch(30% 0.014 252);
+  --canvas-grid: oklch(96% 0.01 250 / 0.04);
+  --canvas-accent: oklch(78% 0.115 205);
+  --canvas-accent-tint: oklch(78% 0.115 205 / 0.13);
+  --canvas-signal: oklch(80% 0.14 72);
+  --canvas-halo: oklch(58% 0.15 285 / 0.16);
+
+  --shadow-md: 0 16px 40px -22px oklch(0% 0 0 / 0.7);
+
+  color-scheme: dark;
+}

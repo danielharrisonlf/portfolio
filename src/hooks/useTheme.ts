@@ -1,72 +1,85 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Theme } from '../types';
+import { useCallback, useEffect, useState } from 'react';
+import type { Theme } from '../types';
+
+/** Chave de persistência. Mantida igual à versão anterior para não perder
+ *  a preferência de quem já visitou o site. */
+const STORAGE_KEY = 'dh_theme';
 
 /**
  * Fator entre o raio necessário para cobrir a tela e o tamanho da caixa da
- * máscara. A máscara é um radial-gradient `closest-side` opaco até 80% do
- * raio, ou seja, a parte sólida chega a 0.4 do lado da caixa.
- * 2.8 => raio sólido de 1.12x o necessário: cobre o canto mais distante com
- * margem e ainda deixa a borda esfumaçada aparecendo.
+ * máscara. A máscara é um radial-gradient `closest-side` sólido até 88% do
+ * raio, ou seja, a parte opaca chega a 0.44 do lado da caixa.
+ * 2.8 => raio sólido de ~1.23x o necessário: cobre o canto mais distante
+ * com margem e ainda deixa a borda esfumaçada aparecer.
  */
 const MASK_SCALE = 2.8;
 
 type ViewTransition = { ready: Promise<void>; finished: Promise<void> };
-
 type ViewTransitionDocument = Document & {
   startViewTransition?: (callback: () => void) => ViewTransition;
 };
 
-export function useTheme(defaultTheme: Theme = 'light') {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dh_theme') as Theme | null;
-      if (saved === 'light' || saved === 'dark') return saved;
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-      }
-    }
-    return defaultTheme;
-  });
+function readInitialTheme(): Theme {
+  const attr = document.documentElement.getAttribute('data-theme');
+  if (attr === 'light' || attr === 'dark') return attr;
+
+  // Fallback: só acontece se o script inline do index.html não rodou.
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === 'light' || saved === 'dark') return saved;
+  } catch {
+    /* localStorage bloqueado — segue para a preferência do sistema. */
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+export function useTheme() {
+  /*
+   * O tema inicial é LIDO do DOM, não recalculado. O script inline no
+   * index.html já resolveu isso antes da primeira pintura; recalcular aqui
+   * abriria uma janela para os dois discordarem.
+   */
+  const [theme, setTheme] = useState<Theme>(readInitialTheme);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('dh_theme', theme);
+    try {
+      localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+      /* Modo privado: a preferência vale só para esta sessão. */
+    }
   }, [theme]);
 
   const toggleTheme = useCallback(
-    (event?: React.MouseEvent) => {
-      const nextTheme: Theme = theme === 'light' ? 'dark' : 'light';
+    (event?: React.MouseEvent<HTMLButtonElement>) => {
+      const next: Theme = theme === 'light' ? 'dark' : 'light';
       const root = document.documentElement;
 
       /*
        * O atributo é trocado de forma síncrona aqui dentro, e não só via
-       * setState. O React agrupa atualizações, então o snapshot "depois" da
+       * setState: o React agrupa atualizações, então o snapshot "depois" da
        * View Transition podia ser capturado ainda com o tema antigo.
        */
-      const applyTheme = () => {
-        root.setAttribute('data-theme', nextTheme);
-        setTheme(nextTheme);
+      const apply = () => {
+        root.setAttribute('data-theme', next);
+        setTheme(next);
       };
 
       const doc = document as ViewTransitionDocument;
       if (typeof doc.startViewTransition !== 'function') {
-        applyTheme();
+        apply();
         return;
       }
 
       /*
        * Origem da revelação: o centro do próprio botão, não o ponteiro.
-       * Ativação por teclado (Enter/Espaço) dispara um clique com
-       * clientX/clientY = 0, o que faria o círculo nascer no canto superior
-       * esquerdo. O retângulo do botão vale para mouse, toque e teclado.
+       * Ativação por teclado dispara um clique com clientX/clientY = 0, o
+       * que faria o círculo nascer no canto superior esquerdo.
        */
-      const trigger = event?.currentTarget as HTMLElement | undefined;
-      const rect = trigger?.getBoundingClientRect();
-
+      const rect = event?.currentTarget?.getBoundingClientRect();
       const x = rect ? rect.left + rect.width / 2 : window.innerWidth - 40;
-      const y = rect ? rect.top + rect.height / 2 : 30;
+      const y = rect ? rect.top + rect.height / 2 : 32;
 
-      // Distância até o canto mais distante — o círculo precisa alcançá-lo.
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
         Math.max(y, window.innerHeight - y)
@@ -76,13 +89,13 @@ export function useTheme(defaultTheme: Theme = 'light') {
       root.style.setProperty('--tt-y', `${y}px`);
       root.style.setProperty('--tt-size', `${Math.ceil(endRadius * MASK_SCALE)}px`);
 
-      const transition = doc.startViewTransition(applyTheme);
+      const transition = doc.startViewTransition(apply);
 
       /*
-       * A troca de tema em si nunca depende da animação: o callback roda mesmo
-       * quando a transição é abortada. Mas `ready`/`finished` rejeitam nesses
-       * casos (aba em segundo plano, ou dois cliques rápidos abortando a
-       * anterior) e, sem catch, viram "Uncaught (in promise)" no console.
+       * A troca de tema nunca depende da animação: o callback roda mesmo
+       * quando a transição é abortada. Mas `ready`/`finished` rejeitam
+       * nesses casos (aba em segundo plano, dois cliques rápidos) e, sem
+       * catch, viram "Uncaught (in promise)" no console.
        */
       transition.ready.catch(() => {});
       transition.finished.catch(() => {});
@@ -90,9 +103,5 @@ export function useTheme(defaultTheme: Theme = 'light') {
     [theme]
   );
 
-  return {
-    theme,
-    toggleTheme,
-    isDark: theme === 'dark',
-  };
+  return { theme, isDark: theme === 'dark', toggleTheme };
 }

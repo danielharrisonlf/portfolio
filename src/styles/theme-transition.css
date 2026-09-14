@@ -1,0 +1,62 @@
+/* ==========================================================================
+   Troca de tema
+   O tema novo é revelado por baixo de um círculo que cresce a partir do
+   botão clicado. --tt-x / --tt-y / --tt-size vêm do useTheme.
+
+   A revelação usa máscara em vez de clip-path: clip-path só corta em aresta
+   viva e não aceita gradiente, então a borda do círculo ficaria serrilhada.
+   ========================================================================== */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* O tema antigo fica parado embaixo; o novo é revelado por cima. */
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0 88%, transparent 100%);
+  mask-image: radial-gradient(circle closest-side, #000 0 88%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: themeReveal 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/*
+ * `mask-size` e `mask-position` são animados juntos: a posição recua metade
+ * do tamanho a cada quadro, o que mantém o centro do círculo cravado no
+ * botão enquanto ele cresce (a máscara é ancorada pelo canto, não pelo
+ * centro).
+ */
+@keyframes themeReveal {
+  from {
+    -webkit-mask-size: 0 0;
+    mask-size: 0 0;
+    -webkit-mask-position: var(--tt-x, 50%) var(--tt-y, 50%);
+    mask-position: var(--tt-x, 50%) var(--tt-y, 50%);
+  }
+  to {
+    -webkit-mask-size: var(--tt-size, 250vmax) var(--tt-size, 250vmax);
+    mask-size: var(--tt-size, 250vmax) var(--tt-size, 250vmax);
+    -webkit-mask-position: calc(var(--tt-x, 50%) - var(--tt-size, 250vmax) / 2)
+      calc(var(--tt-y, 50%) - var(--tt-size, 250vmax) / 2);
+    mask-position: calc(var(--tt-x, 50%) - var(--tt-size, 250vmax) / 2)
+      calc(var(--tt-y, 50%) - var(--tt-size, 250vmax) / 2);
+  }
+}
+
+/*
+ * Um wipe de tela inteira é justamente o tipo de efeito que incomoda quem
+ * tem sensibilidade a movimento. A preferência é respeitada: a troca de
+ * tema continua instantânea, só sem o círculo crescendo.
+ */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}

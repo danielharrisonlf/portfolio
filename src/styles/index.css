@@ -1,0 +1,5 @@
+/* Entrada única de estilos. A ordem importa:
+   tokens → reset → base → módulos dos componentes (importados por eles). */
+@import './tokens.css';
+@import './reset.css';
+@import './base.css';

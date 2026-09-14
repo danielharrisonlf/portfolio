@@ -1,0 +1,298 @@
+/* ==========================================================================
+   Experiência
+   Sem cards. Cada empresa é uma linha de uma linha do tempo: metadados à
+   esquerda, conteúdo à direita. Cards repetitivos com borda e sombra davam
+   o mesmo peso visual a três experiências de pesos diferentes.
+   ========================================================================== */
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: var(--sp-10);
+  padding-block: var(--sp-10);
+  border-top: 1px solid var(--line);
+}
+
+.item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.item:last-child {
+  padding-bottom: 0;
+}
+
+/* --- Coluna de metadados ------------------------------------------------ */
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  position: sticky;
+  top: calc(var(--header-h) + var(--sp-10));
+}
+
+.period {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.periodShort {
+  display: none;
+}
+
+.marker {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  background: var(--bg);
+}
+
+.markerCurrent {
+  border-color: var(--signal);
+  background: var(--signal);
+  box-shadow: 0 0 0 3px var(--signal-tint);
+}
+
+/* --- Conteúdo ----------------------------------------------------------- */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  min-width: 0;
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2) var(--sp-3);
+}
+
+.company {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-snug);
+  color: var(--fg);
+}
+
+.role {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.context {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--faint);
+  max-width: 66ch;
+  padding-left: var(--sp-4);
+  border-left: 1px solid var(--line);
+}
+
+.summary {
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: var(--fg-2);
+  max-width: 62ch;
+}
+
+/* --- Bloco de destaque -------------------------------------------------- */
+
+.featured {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 30ch);
+  gap: var(--sp-6);
+  align-items: start;
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--surface);
+}
+
+.featuredBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.featuredTitle {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.featuredDesc {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--muted);
+  max-width: 56ch;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  text-align: right;
+}
+
+.metricValue {
+  font-family: var(--font-mono);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--signal);
+}
+
+.metricLabel {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* --- Bullets ------------------------------------------------------------ */
+
+.bullets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  max-width: 66ch;
+}
+
+.bullet {
+  position: relative;
+  padding-left: var(--sp-5);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--muted);
+}
+
+.bullet::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 5px;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.bullet strong {
+  font-weight: 600;
+  color: var(--fg-2);
+}
+
+/* --- Rodapé da linha ---------------------------------------------------- */
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-top: var(--sp-2);
+}
+
+.stackLabel {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.stackItem {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--fg-2);
+  padding: 3px var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-4);
+    padding-block: var(--sp-8);
+  }
+
+  .meta {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  .featured {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .metric {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--sp-3);
+    max-width: 100%;
+    padding-top: var(--sp-2);
+    border-top: 1px solid var(--line);
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  .context {
+    padding-left: var(--sp-3);
+  }
+
+  .heading {
+    flex-direction: column;
+    gap: var(--sp-1);
+  }
+
+  .metric {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-1);
+  }
+
+  .metricValue {
+    font-size: 1.5rem;
+  }
+
+  /* Em tela estreita o período completo ocupa a linha inteira e afasta o
+     nome da empresa do topo do bloco. A forma curta preserva o "quando"
+     sem custar a primeira dobra de cada item. */
+  .periodLong {
+    display: none;
+  }
+
+  .periodShort {
+    display: inline;
+  }
+}

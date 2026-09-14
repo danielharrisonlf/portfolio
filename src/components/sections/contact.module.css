@@ -1,0 +1,202 @@
+/* ==========================================================================
+   Contato
+   Fecho da página. Não é tela cheia: forçar 100svh empurrava o rodapé para
+   fora da vista e deixava faixa morta em telas altas. O peso vem da escala
+   do título e do respiro, não da altura mínima.
+   ========================================================================== */
+
+/*
+ * A largura é limitada em `rem`, não em `ch`: o título usa uma escala de
+ * display fluida, e `ch` é medido na fonte do PRÓPRIO elemento. Com `34ch`
+ * de `--text-3xl` (48px), "Vamos conversar" quebrava em duas linhas no
+ * desktop apesar de caber com folga na coluna.
+ */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 34rem;
+}
+
+.title {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+/* --- Oferta de contato -------------------------------------------------- */
+
+.emailRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--sp-3);
+  margin-top: var(--sp-10);
+}
+
+/*
+ * O e-mail é o alvo principal, então é o maior elemento tipográfico da
+ * seção depois do título — é o que a pessoa veio buscar aqui.
+ * `line-break: anywhere` em vez de `overflow-wrap`: endereço de e-mail não
+ * tem espaço para quebrar, e a quebra por caractere é a única saída —
+ * melhor uma quebra previsível no meio do endereço do que uma linha que
+ * estoura o container.
+ */
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 48px;
+  padding-inline: var(--sp-5);
+  border: 1px solid var(--accent-solid);
+  border-radius: var(--radius-sm);
+  background: var(--accent-solid);
+  color: var(--accent-on-solid);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-break: anywhere;
+  transition:
+    filter var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.email:hover {
+  filter: brightness(1.08);
+}
+
+.email:active {
+  transform: translateY(1px);
+}
+
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 48px;
+  padding-inline: var(--sp-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--fg);
+  font-size: var(--text-base);
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.copy:hover {
+  border-color: var(--fg);
+  background: var(--surface);
+}
+
+.copy[data-copied='true'] {
+  border-color: var(--signal-line);
+  color: var(--signal);
+}
+
+/* --- Redes -------------------------------------------------------------- */
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-6);
+}
+
+.social {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-inline: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--fg-2);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.social:hover {
+  border-color: var(--fg);
+  color: var(--fg);
+  transform: translateY(-1px);
+}
+
+/* A seta de "abre em outra aba" só ganha cor no hover — parada, ela é
+   ruído; em movimento, confirma que o clique sai do site. */
+.social svg:last-child {
+  color: var(--faint);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.social:hover svg:last-child {
+  color: var(--accent);
+}
+
+/* --- Disponibilidade ---------------------------------------------------- */
+
+.availability {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-10);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 3px var(--signal-tint);
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+@media (max-width: 560px) {
+  .head {
+    max-width: 100%;
+  }
+
+  .emailRow {
+    gap: var(--sp-2);
+    margin-top: var(--sp-8);
+  }
+
+  .email,
+  .copy {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .email {
+    font-size: var(--text-sm);
+    padding-inline: var(--sp-4);
+  }
+
+  .socials {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .social {
+    justify-content: center;
+  }
+}

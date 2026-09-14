@@ -1,0 +1,236 @@
+/* ==========================================================================
+   Formação e fundamentos
+   Uma linha por curso, no mesmo compasso da seção de experiência — a
+   página inteira usa uma grade só, então nada parece colado de outro site.
+   ========================================================================== */
+
+.entries {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * 280px é a largura mínima em que "Universidade da Amazônia (UNAMA)" quebra
+ * em duas linhas em vez de três. A coluna de texto fica com o resto e
+ * mantém a medida de leitura confortável.
+ */
+.entry {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: var(--sp-10);
+  padding-block: var(--sp-8);
+  border-top: 1px solid var(--line);
+}
+
+.entry:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.entry:last-child {
+  padding-bottom: 0;
+}
+
+/* --- Coluna esquerda ---------------------------------------------------- */
+
+.schoolSide {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.school {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-snug);
+  line-height: var(--leading-snug);
+  color: var(--fg);
+}
+
+.period {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--sp-2);
+  padding: 3px var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/*
+ * O estado "em andamento" e o "transferido" tinham a mesma cor na versão
+ * anterior, dando o mesmo peso a significados opostos. Agora só o que
+ * está em curso recebe cor; o encerrado fica neutro.
+ */
+.statusActive {
+  border-color: var(--signal-line);
+  background: var(--signal-tint);
+  color: var(--signal);
+}
+
+.statusDot {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* --- Coluna direita ----------------------------------------------------- */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+/*
+ * O curso é a resposta e a instituição é o contexto, então o curso vem
+ * primeiro na coluna da direita — mesma ordem da seção de experiência,
+ * onde o cargo abre o bloco e a empresa contextualiza.
+ */
+.course {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.desc {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--muted);
+  max-width: 64ch;
+}
+
+.subjectsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding-top: var(--sp-1);
+}
+
+.subjectsLabel {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.subjects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.subject {
+  font-size: var(--text-xs);
+  color: var(--fg-2);
+  padding: 4px var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+}
+
+/* --- Fundamentos -------------------------------------------------------- */
+
+.practices {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: var(--sp-10);
+  padding-top: var(--sp-8);
+  margin-top: var(--sp-8);
+  border-top: 1px solid var(--line);
+}
+
+.practicesHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.practicesTitle {
+  font-size: var(--text-base);
+  font-weight: 550;
+  color: var(--fg);
+}
+
+.practicesNote {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--faint);
+}
+
+.practiceList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.practice {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--fg-2);
+  padding: 5px var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.practice:hover {
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .entry,
+  .practices {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .schoolSide {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-4);
+  }
+
+  .status {
+    align-self: center;
+  }
+
+  .practicesHead {
+    gap: var(--sp-1);
+  }
+}
+
+@media (max-width: 560px) {
+  .practice {
+    padding-inline: var(--sp-3);
+  }
+}

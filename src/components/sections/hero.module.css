@@ -1,0 +1,469 @@
+/* ==========================================================================
+   Hero
+   O topo do site é um painel escuro sangrando de ponta a ponta. Ele ancora
+   a identidade: o resto da página é claro e silencioso, e é o contraste
+   com esta faixa que dá peso ao nome.
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--canvas);
+  color: var(--canvas-fg);
+}
+
+/*
+ * Camada de fundo. É um elemento próprio, não um pseudo-elemento: o `.hero`
+ * já usa `::after` para a linha de base, e empilhar os dois no mesmo
+ * pseudo-elemento fazia o último vencer — o separador nunca aparecia.
+ */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--canvas-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--canvas-grid) 1px, transparent 1px);
+  background-size: 72px 72px;
+  /* O grid some em direção às bordas em vez de cortar seco. */
+  mask-image: radial-gradient(120% 100% at 50% 0%, #000 35%, transparent 100%);
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 0%, #000 35%, transparent 100%);
+}
+
+.glowA,
+.glowB {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.5;
+}
+
+.glowA {
+  top: -18%;
+  left: 4%;
+  width: 46rem;
+  height: 30rem;
+  background: radial-gradient(closest-side, var(--canvas-accent-tint), transparent 100%);
+}
+
+.glowB {
+  right: -8%;
+  bottom: -22%;
+  width: 38rem;
+  height: 26rem;
+  background: radial-gradient(closest-side, var(--canvas-halo), transparent 100%);
+}
+
+/* Linha de base: separa o canvas do corpo da página com uma aresta viva. */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--canvas-accent-tint),
+    transparent
+  );
+}
+
+/*
+ * Grain do canvas. Fica no ::before porque o ::after já é a linha de base —
+ * duas regras disputando o mesmo pseudo-elemento é uma colisão silenciosa:
+ * a última vence e a outra simplesmente não existe.
+ */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --- Estrutura ---------------------------------------------------------- */
+
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  align-items: center;
+  gap: var(--sp-16);
+  max-width: var(--container-wide);
+  margin-inline: auto;
+  /*
+   * O respiro vertical é fluido e o hero NÃO tem altura mínima de viewport.
+   * A versão anterior travava `calc(100svh - var(--nav-h))` com o conteúdo
+   * centralizado: em tela alta sobrava uma faixa morta de 200px entre o
+   * hero e a primeira seção, que lia como conteúdo faltando. Aqui a altura
+   * acompanha o conteúdo e o excedente vira respiro proporcional.
+   */
+  padding: clamp(3.5rem, 2.5rem + 5vw, 7rem) var(--gutter);
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-6);
+  min-width: 0;
+}
+
+/* --- Identidade --------------------------------------------------------- */
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.avatar {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--canvas-2);
+  box-shadow: 0 0 0 1px var(--canvas-line);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.35) contrast(1.06);
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.name {
+  font-size: clamp(1.5rem, 1.15rem + 1.5vw, 2.125rem);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.08;
+  color: var(--canvas-fg);
+  overflow-wrap: break-word;
+}
+
+.role {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--canvas-muted);
+  min-width: 0;
+}
+
+/*
+ * Cada papel é uma unidade que não se parte. Sem o `nowrap`, "APPLIED AI
+ * ENGINEER" quebra no meio da palavra antes de o flex decidir jogar o item
+ * inteiro para a linha de baixo.
+ */
+.roleItem {
+  white-space: nowrap;
+}
+
+/* Separador entre os papéis, desenhado pelo CSS. */
+.roleItem::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin-right: var(--sp-3);
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+  vertical-align: middle;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 4px var(--sp-3) 4px var(--sp-2);
+  border: 1px solid var(--canvas-line);
+  border-radius: var(--radius-full);
+  background: color-mix(in oklch, var(--canvas-2) 60%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.02em;
+  color: var(--canvas-fg-2);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--canvas-signal);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--canvas-signal) 22%, transparent);
+  animation: pulse 2.6s var(--ease-in-out) infinite;
+}
+
+/* --- Pitch -------------------------------------------------------------- */
+
+.headline {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--canvas-fg);
+  max-width: 16ch;
+  /* Uma palavra sozinha maior que o container não pode empurrar a largura
+     da página: ela quebra no meio em vez de vazar. */
+  overflow-wrap: break-word;
+}
+
+.bio {
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: var(--canvas-fg-2);
+  max-width: 48ch;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* --- Painel de stack ---------------------------------------------------- */
+
+.panel {
+  min-width: 0;
+  padding: var(--sp-6);
+  border: 1px solid var(--canvas-line);
+  border-radius: var(--radius-lg);
+  background: color-mix(in oklch, var(--canvas-2) 72%, transparent);
+  /*
+   * A diferença de preenchimento entre o painel e o canvas é pequena de
+   * propósito — um salto forte de cor viraria "card sobre fundo", que é
+   * exatamente o clichê que este layout evita. O que separa o painel é a
+   * combinação de borda, luz interna no topo e o grid do fundo passando
+   * por trás.
+   */
+  box-shadow: inset 0 1px 0 color-mix(in oklch, var(--canvas-fg) 7%, transparent);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.panelHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--canvas-line);
+}
+
+.panelTitle {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--canvas-fg);
+}
+
+.panelNote {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--canvas-muted);
+  text-align: right;
+}
+
+.layers {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Cada camada é uma linha da grade. O recuo cresce a cada nível — a
+ * hierarquia fica legível sem desenhar conectores que não existem.
+ */
+.layer {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding: var(--sp-4) 0;
+  border-bottom: 1px solid color-mix(in oklch, var(--canvas-line) 55%, transparent);
+}
+
+.layer:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.layer:first-child {
+  padding-top: var(--sp-4);
+}
+
+.layerLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.layerName {
+  font-size: var(--text-sm);
+  font-weight: 550;
+  color: var(--canvas-fg);
+}
+
+.layerNote {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.02em;
+  color: var(--canvas-muted);
+}
+
+.layerItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--sp-2);
+  min-width: 0;
+}
+
+/* Vírgula desenhada entre itens: lê como lista, não como grade de chips. */
+.layerItems li {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--canvas-fg-2);
+  white-space: nowrap;
+}
+
+.layerItems li:not(:last-child)::after {
+  content: '';
+  width: 2px;
+  height: 2px;
+  margin-left: var(--sp-2);
+  border-radius: 50%;
+  background: var(--canvas-muted);
+  opacity: 0.7;
+}
+
+/* --- Animação de entrada ------------------------------------------------ */
+
+.rise {
+  animation: rise var(--dur-slow) var(--ease-out) both;
+}
+
+.rise2 {
+  animation: rise var(--dur-slow) var(--ease-out) 90ms both;
+}
+
+.rise3 {
+  animation: rise var(--dur-slow) var(--ease-out) 180ms both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in oklch, var(--canvas-signal) 0%, transparent);
+  }
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+/* Notebook: duas colunas ficam apertadas, o painel desce para baixo. */
+@media (max-width: 1080px) {
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-12);
+    align-items: start;
+  }
+
+  .headline {
+    max-width: 22ch;
+  }
+
+  .panel {
+    max-width: 640px;
+  }
+}
+
+/* Mobile: o painel vira lista de camadas empilhadas, sem recuo. */
+@media (max-width: 620px) {
+  .layer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-2);
+  }
+
+  .layerLabel {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-3);
+  }
+
+  .panel {
+    padding: var(--sp-5) var(--sp-4);
+  }
+
+  .panelNote {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .identity {
+    gap: var(--sp-3);
+  }
+
+  .avatar {
+    width: 54px;
+    height: 54px;
+  }
+
+  .role {
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  .headline {
+    max-width: 100%;
+  }
+
+  .bio {
+    font-size: var(--text-base);
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions > * {
+    flex: 1 1 auto;
+  }
+}

@@ -1,94 +1,123 @@
-﻿import React, { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTheme } from './hooks/useTheme';
-import { ScrollProgressBar } from './components/ScrollProgressBar';
-import { Navbar } from './components/Navbar';
-import { MobileMenu } from './components/MobileMenu';
-import { Hero } from './components/Hero';
-import { ExperienceSection } from './components/ExperienceSection';
-import { ProjectsSection } from './components/ProjectsSection';
-import { EducationSection } from './components/EducationSection';
-import { ContactSection } from './components/ContactSection';
-import { Footer } from './components/Footer';
-import { FloatingNav } from './components/FloatingNav';
+import { useActiveSection } from './hooks/useActiveSection';
+import { useMediaQuery } from './hooks/useMediaQuery';
+import { useScrollProgress } from './hooks/useScrollProgress';
+import { Header } from './components/layout/Header';
+import { MobileMenu } from './components/layout/MobileMenu';
+import { Footer } from './components/layout/Footer';
+import { Hero } from './components/sections/Hero';
+import { ExperienceSection } from './components/sections/ExperienceSection';
+import { ProjectsSection } from './components/sections/ProjectsSection';
+import { EducationSection } from './components/sections/EducationSection';
+import { ContactSection } from './components/sections/ContactSection';
 import {
-  navItems,
-  stackItems,
-  practices,
-  experiences,
-  projects,
   education,
+  experiences,
+  navItems,
   personalInfo,
+  practices,
+  projects,
+  stackLayers,
 } from './data/portfolioData';
+import { scrollToSection, setHash } from './utils/scroll';
 
-export const App: React.FC = () => {
-  // O atributo data-theme vive só no <html> (escrito por useTheme).
-  // Antes ele era duplicado aqui numa div, e o de dentro vencia a cascata.
-  const { toggleTheme, isDark } = useTheme('light');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const HOME_ID = 'inicio';
 
-  const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
-  const closeMobileMenu = () => setMobileMenuOpen(false);
+export function App() {
+  const { isDark, toggleTheme } = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const progress = useScrollProgress();
+
+  /*
+   * O painel mobile é montado só abaixo do breakpoint. Escondê-lo por CSS
+   * deixaria o overlay no DOM — recebendo foco e prendendo a rolagem do
+   * body. Aqui ele simplesmente não existe.
+   */
+  const isCompact = useMediaQuery('(max-width: 980px)');
+
+  const sectionIds = useMemo(
+    () => [HOME_ID, ...navItems.map((item) => item.id)],
+    []
+  );
+  const activeId = useActiveSection(sectionIds);
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 4);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Ao cruzar o breakpoint para desktop, o painel precisa fechar junto —
+  // senão a rolagem do body fica travada sem nada na tela para explicar.
+  useEffect(() => {
+    if (!isCompact) setMenuOpen(false);
+  }, [isCompact]);
+
+  const navigate = (id: string) => {
+    setMenuOpen(false);
+    setHash(id);
+    scrollToSection(id);
+  };
+
+  const handleNavigate = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    // O href continua no HTML (funciona sem JS, é copiável, tem preview);
+    // o clique é que passa a ser controlado para rolar com o offset certo.
+    event.preventDefault();
+    navigate(id);
+  };
+
+  const handleOpenMenu = () => setMenuOpen(true);
 
   return (
-    <div
-      className="bg-noise"
-      style={{
-        backgroundColor: 'var(--bg)',
-        color: 'var(--fg)',
-        minHeight: '100vh',
-        fontFamily: "'Archivo', sans-serif",
-        transition: 'background-color 0.2s ease, color 0.2s ease',
-        position: 'relative',
-      }}
-    >
-      {/* Top Fixed Scroll Indicator */}
-      <ScrollProgressBar />
+    <>
+      <a href="#conteudo" className="skipLink">
+        Pular para o conteúdo
+      </a>
 
-      {/* Floating Glassmorphic Quick Nav Dock */}
-      <FloatingNav navItems={navItems} isMenuOpen={mobileMenuOpen} />
-
-      {/* Top Navigation */}
-      <Navbar
+      <Header
+        activeId={activeId}
         navItems={navItems}
         isDark={isDark}
+        isScrolled={isScrolled}
+        progress={progress}
         onToggleTheme={toggleTheme}
-        onOpenMobileMenu={toggleMobileMenu}
+        onOpenMenu={handleOpenMenu}
+        onNavigate={handleNavigate}
         githubUrl={personalInfo.githubUrl}
         linkedinUrl={personalInfo.linkedinUrl}
         cvUrl={personalInfo.cvUrl}
       />
 
-      {/* Mobile Drawer Menu */}
-      <MobileMenu
-        isOpen={mobileMenuOpen}
-        onClose={closeMobileMenu}
-        navItems={navItems}
-        githubUrl={personalInfo.githubUrl}
-        linkedinUrl={personalInfo.linkedinUrl}
-        cvUrl={personalInfo.cvUrl}
-      />
+      {isCompact && menuOpen && (
+        <MobileMenu
+          isOpen
+          onClose={() => setMenuOpen(false)}
+          navItems={navItems}
+          info={personalInfo}
+          onNavigate={handleNavigate}
+        />
+      )}
 
-      {/* Main Content Sections */}
-      <main>
-        {/* Hero Section */}
-        <Hero stack={stackItems} practices={practices} isDark={isDark} />
-
-        {/* Experience Section */}
+      {/*
+        `tabIndex={-1}` para o link "pular para o conteúdo" mover o foco de
+        verdade. Sem ele, o destino do skip link fica a cargo do navegador e
+        o Tab seguinte volta para o começo do documento.
+      */}
+      <main id="conteudo" tabIndex={-1}>
+        <Hero info={personalInfo} layers={stackLayers} onNavigate={handleNavigate} />
         <ExperienceSection experiences={experiences} />
-
-        {/* Projects Section */}
         <ProjectsSection projects={projects} />
-
-        {/* Education Section */}
-        <EducationSection education={education} />
-
-        {/* Contact — é alvo da navegação, então mora dentro do <main> */}
-        <ContactSection />
+        <EducationSection education={education} practices={practices} />
+        <ContactSection info={personalInfo} />
       </main>
 
-      <Footer />
-    </div>
+      <Footer info={personalInfo} topId={HOME_ID} />
+    </>
   );
-};
+}
 
 export default App;

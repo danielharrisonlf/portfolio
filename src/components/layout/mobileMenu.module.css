@@ -1,0 +1,197 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: color-mix(in oklch, var(--bg) 55%, transparent);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fade var(--dur-base) var(--ease-out) both;
+}
+
+.sheet {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+  animation: slideDown 260ms var(--ease-out) both;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  min-height: var(--header-h);
+  padding-inline: var(--gutter);
+  border-bottom: 1px solid var(--line);
+}
+
+.topLabel {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-right: -8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  color: var(--fg);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.close:hover {
+  border-color: var(--fg);
+}
+
+/* --- Itens -------------------------------------------------------------- */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  padding-inline: var(--gutter);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  /* 64px de altura: alvo de toque folgado e ritmo constante na lista. */
+  min-height: 64px;
+  padding-block: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.index {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--faint);
+  flex: none;
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.375rem;
+  font-weight: 550;
+  letter-spacing: var(--tracking-snug);
+  color: var(--fg);
+}
+
+.item:hover .label,
+.item:focus-visible .label {
+  color: var(--accent);
+}
+
+.chevron {
+  flex: none;
+  color: var(--faint);
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.item:hover .chevron {
+  transform: translateX(3px);
+  color: var(--accent);
+}
+
+/* --- Rodapé do painel --------------------------------------------------- */
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-6) var(--gutter) calc(var(--sp-8) + env(safe-area-inset-bottom, 0px));
+  margin-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.email {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+.email:hover {
+  color: var(--accent);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 40px;
+  padding-inline: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--fg-2);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.link:hover {
+  border-color: var(--fg);
+  color: var(--fg);
+}
+
+.cv {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 48px;
+  padding-inline: var(--sp-4);
+  border-radius: var(--radius-xs);
+  background: var(--accent-solid);
+  color: var(--accent-on-solid);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+/* O painel nunca é montado acima de 980px: quem decide isso é o
+   `useMediaQuery` no componente, não uma regra de display. Um overlay
+   "escondido" por CSS continuaria no DOM, roubando foco e prendendo a
+   rolagem do body. */

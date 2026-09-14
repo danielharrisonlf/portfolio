@@ -1,0 +1,115 @@
+.footer {
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4) var(--sp-8);
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: var(--sp-8) var(--gutter);
+  /* Folga para o botão "voltar ao topo" não encostar no conteúdo. */
+  padding-bottom: var(--sp-10);
+}
+
+.signature {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--faint);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-4);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 36px;
+  padding-inline: var(--sp-2);
+  margin-inline: calc(var(--sp-2) * -1);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.link:hover {
+  color: var(--fg);
+}
+
+/* ==========================================================================
+   Botão "voltar ao topo"
+   Só existe depois que a pessoa passou do hero: no topo da página ele não
+   teria função nenhuma e ainda competiria com o conteúdo.
+   ========================================================================== */
+
+.toTop {
+  position: fixed;
+  right: var(--gutter);
+  bottom: calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-full);
+  background: color-mix(in oklch, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--fg-2);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out),
+    visibility var(--dur-base),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.toTop[data-visible='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.toTop:hover {
+  border-color: var(--fg);
+  color: var(--fg);
+}
+
+@media (max-width: 640px) {
+  .inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-6);
+  }
+
+  .nav {
+    gap: var(--sp-2) var(--sp-5);
+  }
+}

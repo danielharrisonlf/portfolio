@@ -3,34 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <title>Daniel Harrison | Software Developer — Applied AI Engineer</title>
+    <title>Daniel Harrison — Software Developer &amp; Applied AI Engineer</title>
     <meta
       name="description"
-      content="Desenvolvedor Full Stack com 3 anos de experiência. Atuo em arquitetura, infraestrutura e desenvolvimento, e hoje trabalho com engenharia de IA aplicada, construindo agentes que rodam em produção."
+      content="Desenvolvedor Full Stack com 3 anos de experiência em backend, integrações e infraestrutura. Hoje construo agentes de IA que rodam em produção."
     />
     <meta name="author" content="Daniel Harrison" />
+    <meta name="color-scheme" content="light dark" />
 
     <!-- Cor da barra do navegador acompanha o tema -->
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1c1f" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfbfc" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#16171a" />
 
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:site_name" content="Daniel Harrison" />
-    <meta property="og:title" content="Daniel Harrison | Software Developer — Applied AI Engineer" />
+    <meta property="og:title" content="Daniel Harrison — Software Developer &amp; Applied AI Engineer" />
     <meta
       property="og:description"
-      content="Desenvolvedor Full Stack com 3 anos de experiência. Atuo em arquitetura, infraestrutura e desenvolvimento, e hoje trabalho com engenharia de IA aplicada, construindo agentes que rodam em produção."
+      content="Backend, integrações e infraestrutura. Hoje construo agentes de IA que rodam em produção."
     />
     <meta property="og:url" content="https://danielharrison.vercel.app" />
     <meta property="og:image" content="https://danielharrison.vercel.app/uploads/backback.png" />
     <meta property="og:image:alt" content="Daniel Harrison" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Daniel Harrison | Software Developer — Applied AI Engineer" />
+    <meta name="twitter:title" content="Daniel Harrison — Software Developer &amp; Applied AI Engineer" />
     <meta
       name="twitter:description"
       content="Desenvolvedor Full Stack com 3 anos de experiência. Hoje construo agentes de IA que rodam em produção."
@@ -38,14 +39,21 @@
     <meta name="twitter:image" content="https://danielharrison.vercel.app/uploads/backback.png" />
     <link rel="canonical" href="https://danielharrison.vercel.app" />
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,72,400;0,72,500;0,72,600;1,72,400;1,72,500&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!--
+      Uma única família tipográfica (Inter, pesos 400–700, eixo variável,
+      subset latin). A identidade vem do contraste entre a sans e a stack
+      monoespaçada do sistema — não de uma terceira fonte.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
 
     <!--
       Aplica o tema antes da primeira pintura para evitar flash de tema errado.
-      Precisa bater com a chave usada em src/hooks/useTheme.ts.
+      A chave precisa bater com a usada em src/hooks/useTheme.ts.
     -->
     <script>
       (function () {
@@ -55,8 +63,8 @@
             saved === 'light' || saved === 'dark'
               ? saved
               : window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'light';
+                ? 'dark'
+                : 'light';
           document.documentElement.setAttribute('data-theme', theme);
         } catch (e) {
           document.documentElement.setAttribute('data-theme', 'light');

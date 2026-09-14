@@ -1,0 +1,42 @@
+/*
+ * Seção de conteúdo. O `container` global cuida da largura e das goteiras
+ * laterais; aqui ficam o ritmo vertical e a régua que separa uma seção da
+ * outra. Os dois convivem porque não declaram a mesma propriedade.
+ */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-10);
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--line);
+}
+
+/* --- Cabeçalho --------------------------------------------------------- */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  max-width: 62ch;
+}
+
+.index {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--faint);
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-snug);
+  color: var(--fg);
+}
+
+.intro {
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: var(--muted);
+  max-width: 58ch;
+}

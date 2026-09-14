@@ -1,44 +1,67 @@
-﻿export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark';
 
+export type SectionId = 'inicio' | 'experiencia' | 'projetos' | 'formacao' | 'contato';
+
+/** Item de navegação. `id` é o alvo de âncora; o href é derivado dele. */
 export interface NavItem {
+  id: SectionId;
+  /** Rótulo curto usado no header. */
   label: string;
-  href: string;
-  delayMs: number;
-  num: string;
-}
-
-export interface StackItem {
-  label: string;
-  color: string;
-}
-
-export interface ExperienceItem {
-  role: string;
-  company: string;
-  period: string;
-  context: string;
-  bullets: string[];
-  techs: string[];
-}
-
-export interface ProjectItem {
-  id?: string;
-  name: string;
-  desc: string;
-  stack: string;
-  image?: string;
-  link?: string;
-  /** Link do repositório. Vazio/ausente = botão não é renderizado. */
-  repoUrl?: string;
-  /** Link da demo ao vivo. Vazio/ausente = botão não é renderizado. */
-  demoUrl?: string;
+  /** Rótulo curto usado no menu mobile, onde cabe mais texto. */
+  menuLabel: string;
+  /** Índice exibido no menu mobile (01…05). */
+  index: string;
 }
 
 /**
- * `active` = em curso (verde), `past` = encerrado/transferido (neutro).
- * Sem isso, "EM ANDAMENTO" e "TRANSFERIDO" saíam no mesmo verde, dando
- * o mesmo peso visual a significados opostos.
+ * Texto com trecho destacado. Existe para o dado carregar a intenção de
+ * ênfase em vez de o componente adivinhar com regex sobre a frase.
  */
+export interface RichText {
+  text: string;
+  /** Substring de `text` renderizada como <strong>. */
+  strong?: string;
+}
+
+export interface ExperienceItem {
+  company: string;
+  role: string;
+  period: string;
+  /** Período curto para a trilha temporal em telas estreitas. */
+  shortPeriod: string;
+  /** O que a empresa faz — uma frase, para dar contexto ao recrutador. */
+  context: string;
+  /** Uma linha que resume a contribuição. É o que se lê se nada mais for lido. */
+  summary: string;
+  bullets: RichText[];
+  /**
+   * Entrega principal, destacada fora da lista de bullets. Existe porque
+   * três bullets com o mesmo peso visual escondem qual deles foi o trabalho
+   * de maior impacto — e é esse que o recrutador precisa ler primeiro.
+   */
+  featured?: { title: string; desc: string };
+  /** Número que comprova o destaque. Sem número, o bloco não é renderizado. */
+  metric?: { value: string; label: string };
+  stack: string[];
+  current?: boolean;
+}
+
+export interface ProjectItem {
+  id: string;
+  index: string;
+  name: string;
+  /** O problema que o projeto resolve, em uma frase. */
+  pitch: string;
+  desc: string;
+  /** Decisões técnicas que valem destaque. */
+  highlights: string[];
+  stack: string[];
+  image?: string;
+  imageAlt?: string;
+  repoUrl?: string;
+  demoUrl?: string;
+}
+
 export type EducationStatusKind = 'active' | 'past';
 
 export interface EducationItem {
@@ -51,24 +74,28 @@ export interface EducationItem {
   subjects: string[];
 }
 
-export interface GraphEdge {
-  points: string;
+/** Uma camada da grade de stack exibida no hero. */
+export interface StackLayer {
+  id: string;
+  label: string;
+  /** O que a camada resolve. Curto: uma linha. */
+  note: string;
+  items: string[];
 }
 
-export interface GraphNode {
-  cx: number;
-  cy: number;
-}
-
-export interface GraphData {
-  w: number;
-  h: number;
-  viewBox: string;
-  edges: GraphEdge[];
-  nodes: GraphNode[];
-}
-
-export interface SparkPosition {
-  x: number;
-  y: number;
+export interface PersonalInfo {
+  name: string;
+  /** Papel principal, usado no <title> e no hero. */
+  role: string;
+  /** Dois papéis curtos para o hero — mesma informação, escaneável. */
+  roles: string[];
+  location: string;
+  availability: string;
+  bio: string;
+  photoUrl: string;
+  fallbackPhotoUrl: string;
+  cvUrl: string;
+  email: string;
+  githubUrl: string;
+  linkedinUrl: string;
 }
