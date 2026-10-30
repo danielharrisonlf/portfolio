@@ -96,7 +96,12 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const PROBE = `(() => {
   const hits = [];
   const interactive = document.querySelectorAll('a[href], button, [role="button"]');
-  const header = document.querySelector('header');
+  // A navbar atual é <nav id="site-nav">, não <header>. O dock flutuante
+  // recebe a mesma isenção: conteúdo que rola por baixo de uma barra de
+  // navegação fixa é o comportamento esperado, não um controle coberto
+  // permanentemente. As seções reservam folga no fim para o dock.
+  const header = document.querySelector('header, #site-nav');
+  const dock = document.getElementById('floating-nav-dock');
 
   for (const el of interactive) {
     const r = el.getBoundingClientRect();
@@ -113,6 +118,7 @@ const PROBE = `(() => {
     if (!top) continue;
     if (top === el || el.contains(top) || top.contains(el)) continue;
     if (header && (top === header || header.contains(top))) continue;
+    if (dock && (top === dock || dock.contains(top))) continue;
 
     const label = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 34);
     const blocker = top.tagName.toLowerCase() + '.' + String(top.className).split(' ')[0];

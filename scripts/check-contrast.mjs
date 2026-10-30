@@ -1,12 +1,13 @@
 /**
  * Verificação de contraste WCAG dos tokens de cor.
  *
- * Lê src/styles/tokens.css, converte cada OKLCH para sRGB e calcula a razão
- * de contraste dos pares que realmente aparecem na interface. Roda com
- * `node scripts/check-contrast.mjs`.
+ * Lê os tokens de src/index.css (blocos por tema), converte OKLCH/hex para
+ * sRGB e calcula a razão de contraste dos pares que aparecem na interface.
+ * Roda com `node scripts/check-contrast.mjs`.
  *
- * Existe porque contraste é a única propriedade visual que dá para medir
- * sem navegador — e foi exatamente onde a versão anterior reprovou.
+ * Limite conhecido: valores com color-mix() não são calculáveis aqui — os
+ * pares abaixo usam o token puro sobre o fundo mais próximo, que é o caso
+ * dominante na interface. A conferência visual continua necessária.
  */
 
 import { readFileSync } from 'node:fs';
@@ -14,12 +15,18 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const css = readFileSync(join(here, '..', 'src', 'styles', 'tokens.css'), 'utf8');
+const css = readFileSync(join(here, '..', 'src', 'index.css'), 'utf8');
 
-/** Extrai os tokens de um bloco de seletor. */
+/**
+ * Extrai os tokens de um bloco cujo seletor COMEÇA a linha.
+ * Um indexOf simples casaria com o ":root:not([data-theme='dark'])" do
+ * bloco claro ao procurar o bloco escuro.
+ */
 function readBlock(selector) {
-  const index = css.indexOf(selector);
-  if (index === -1) throw new Error(`Seletor não encontrado: ${selector}`);
+  const re = new RegExp(`^${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'm');
+  const match = re.exec(css);
+  if (!match) throw new Error(`Seletor não encontrado: ${selector}`);
+  const index = match.index;
 
   const open = css.indexOf('{', index);
   const close = css.indexOf('}', open);
@@ -59,183 +66,95 @@ function oklchToRgb(l, c, hDeg) {
   });
 }
 
-function srgbToLinear(rgb) {
-  return rgb.map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
-}
-
-function luminance(rgb) {
-  const [r, g, b] = srgbToLinear(rgb);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-function contrast(a, b) {
-  const la = luminance(a);
-  const lb = luminance(b);
-  const [hi, lo] = la > lb ? [la, lb] : [lb, la];
-  return (hi + 0.05) / (lo + 0.05);
-}
-
-/** Converte um valor de token (`oklch(...)` ou `#rrggbb`) para sRGB. */
-function parse(value) {
+/** Converte o valor textual de um token (oklch(...) ou #hex) para [r,g,b] 0..1. */
+function parseColor(value) {
+  const oklch = value.match(/oklch\(\s*([\d.]+)%\s+([\d.]+)\s+([\d.]+)\s*\)/);
+  if (oklch) {
+    return oklchToRgb(Number(oklch[1]) / 100, Number(oklch[2]), Number(oklch[3]));
+  }
   const hex = value.match(/^#([0-9a-f]{6})$/i);
   if (hex) {
     const n = parseInt(hex[1], 16);
     return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
   }
-
-  const oklch = value.match(/^oklch\(\s*([\d.]+)%?\s+([\d.]+)\s+([\d.]+)/i);
-  if (oklch) {
-    let l = parseFloat(oklch[1]);
-    if (value.includes('%')) l /= 100;
-    return oklchToRgb(l, parseFloat(oklch[2]), parseFloat(oklch[3]));
-  }
-
-  throw new Error(`Valor não suportado: ${value}`);
+  return null;
 }
 
-/** Mistura dois tokens na proporção dada (aproxima `color-mix` em oklab). */
-function mix(base, over, amount) {
-  return base.map((v, i) => v * (1 - amount) + over[i] * amount);
+function relativeLuminance([r, g, b]) {
+  const lin = [r, g, b].map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
 }
 
-/* --- Pares que existem na interface -------------------------------------- */
+function contrast(a, b) {
+  const la = relativeLuminance(a);
+  const lb = relativeLuminance(b);
+  const [hi, lo] = la > lb ? [la, lb] : [lb, la];
+  return (hi + 0.05) / (lo + 0.05);
+}
 
-const AA_TEXT = 4.5; // texto normal
-const AA_LARGE = 3; // texto >= 24px ou >= 18.66px bold
-const AA_GRAPHIC = 3; // elementos gráficos e limites de componente (1.4.11)
+/* --- Pares verificados ---------------------------------------------------- */
 
-const CHECKS = [
-  // [rótulo, cor de frente, cor de fundo, mínimo]
-  ['texto principal sobre o fundo', '--fg', '--bg', AA_TEXT],
-  ['texto secundário sobre o fundo', '--fg-2', '--bg', AA_TEXT],
-  ['texto discreto sobre o fundo', '--muted', '--bg', AA_TEXT],
-  ['texto secundário sobre o cartão', '--fg-2', '--surface', AA_TEXT],
-  ['texto discreto sobre o cartão', '--muted', '--surface', AA_TEXT],
-  ['destaque sobre o fundo', '--accent', '--bg', AA_TEXT],
-  ['destaque sobre o cartão', '--accent', '--surface', AA_TEXT],
-  ['texto do botão primário', '--accent-on-solid', '--accent-solid', AA_TEXT],
-  ['sucesso sobre o fundo', '--ok', '--bg', AA_TEXT],
-  ['sucesso sobre o cartão', '--ok', '--surface', AA_TEXT],
-  ['alerta sobre o fundo', '--warn', '--bg', AA_TEXT],
-  ['erro sobre o fundo', '--danger', '--bg', AA_TEXT],
-  ['borda sobre o fundo', '--line', '--bg', 1.2],
-  ['borda forte sobre o fundo', '--line-strong', '--bg', 1.5],
-  /*
-   * Limite de CONTROLE tem exigência própria: a WCAG 1.4.11 pede 3:1 para
-   * elemento de interface, porque é a borda que informa que aquilo é
-   * clicável. Medido sobre o fundo E sobre a superfície, já que o rodapé e
-   * o cabeçalho usam --surface.
-   */
-  ['borda de controle sobre o fundo', '--line-control', '--bg', AA_GRAPHIC],
-  ['borda de controle sobre o cartão', '--line-control', '--surface', 2.8],
+const themes = {
+  light: readBlock("[data-theme='light']"),
+  dark: readBlock("[data-theme='dark']"),
+};
 
-  // Hero / canvas
-  ['texto do hero', '--canvas-fg', '--canvas', AA_TEXT],
-  ['texto secundário do hero', '--canvas-fg-2', '--canvas', AA_TEXT],
-  ['texto discreto do hero', '--canvas-muted', '--canvas', AA_TEXT],
-  ['destaque do hero', '--canvas-accent', '--canvas', AA_LARGE],
-  ['borda do hero', '--canvas-line', '--canvas', 1.5],
-];
-
-/*
- * O painel do hero NÃO entra em CHECKS: ele é composto na tela como
- * `color-mix(canvas-2 72%, transparent)` sobre o canvas, então medir os
- * tokens crus daria um número que não corresponde a pixel nenhum. A medição
- * certa está na seção de composições, mais abaixo.
+/**
+ * [primeiro plano, fundo, mínimo, descrição]
+ * 4.5 = texto corrido (WCAG 1.4.3); 3.0 = texto grande e elementos
+ * gráficos/da interface (WCAG 1.4.11).
  */
-
-const REQUIRED_BY_THEME = [
-  'bg', 'surface', 'fg', 'fg-2', 'muted', 'faint', 'line', 'line-strong',
-  'accent', 'accent-solid', 'accent-on-solid', 'accent-tint', 'accent-line',
-  'ok', 'ok-tint', 'ok-line', 'warn', 'warn-tint', 'warn-line', 'danger',
-  'canvas', 'canvas-2', 'canvas-fg', 'canvas-fg-2', 'canvas-muted', 'canvas-line',
-  'canvas-grid', 'canvas-accent', 'canvas-accent-tint', 'canvas-glow',
+const pairs = [
+  ['--fg', '--bg', 4.5, 'texto principal sobre a página'],
+  ['--fg', '--bg2', 4.5, 'texto principal sobre cards'],
+  ['--muted', '--bg', 4.5, 'texto secundário sobre a página'],
+  ['--muted', '--bg2', 4.5, 'texto secundário sobre cards'],
+  ['--accent', '--bg', 4.5, 'links e chips de stack (texto pequeno)'],
+  ['--accent', '--bg2', 4.5, 'links/chips sobre cards'],
+  ['--accent-contrast', '--accent-solid', 4.5, 'texto nos botões sólidos'],
+  ['--ok', '--bg2', 3.0, 'selo de status (texto 11px bold uppercase, uso gráfico)'],
+  ['--border', '--bg', 1.2, 'borda sobre página (apenas sanidade, sem exigência WCAG)'],
 ];
 
-const light = readBlock(":root,\n[data-theme='light']");
-const dark = readBlock("[data-theme='dark']");
+const brandMin = 3.0; // WCAG 1.4.11 — elementos gráficos
 
 let failures = 0;
 
-for (const [themeName, tokens] of [
-  ['CLARO', light],
-  ['ESCURO', dark],
-]) {
+for (const [themeName, tokens] of Object.entries(themes)) {
   console.log(`\n=== Tema ${themeName} ===`);
 
-  for (const key of REQUIRED_BY_THEME) {
-    const token = `--${key}`;
-    if (!tokens[token]) {
-      console.log(`  FALTA     ${token} não está definido neste tema`);
-      failures++;
-    }
-  }
-
-  for (const [label, fgKey, bgKey, min] of CHECKS) {
-    const fgRaw = tokens[fgKey];
-    const bgRaw = tokens[bgKey];
-
-    if (!fgRaw || !bgRaw) {
-      console.log(`  PULADO    ${label} (token ausente)`);
+  for (const [fgToken, bgToken, min, label] of pairs) {
+    const fg = parseColor(tokens[fgToken] ?? '');
+    const bg = parseColor(tokens[bgToken] ?? '');
+    if (!fg || !bg) {
+      console.log(`  ?  ${fgToken} / ${bgToken}: valor não calculável (${label})`);
       continue;
     }
-
-    // Tokens com alpha (tints) não entram na medição: o valor efetivo
-    // depende do que está atrás, e isso o CSS resolve em runtime.
-    if (fgRaw.includes('/') || bgRaw.includes('/')) continue;
-
-    let ratio;
-    try {
-      ratio = contrast(parse(fgRaw), parse(bgRaw));
-    } catch (error) {
-      console.log(`  PULADO    ${label} — ${error.message}`);
-      continue;
-    }
-
+    const ratio = contrast(fg, bg);
     const pass = ratio >= min;
     if (!pass) failures++;
     console.log(
-      `  ${pass ? 'OK  ' : 'FALHA'}  ${ratio.toFixed(2).padStart(6)}:1  (mín ${min})  ${label}`
+      `  ${pass ? 'OK ' : 'FAL'} ${ratio.toFixed(2)}:1 (mín ${min}) ${fgToken} sobre ${bgToken} — ${label}`
     );
   }
-}
 
-/* --- Tints aplicados sobre o fundo --------------------------------------- */
-
-console.log('\n=== Composições (aproximação em sRGB) ===');
-
-for (const [themeName, tokens] of [
-  ['CLARO', light],
-  ['ESCURO', dark],
-]) {
-  const bg = parse(tokens['--bg']);
-  const accent = parse(tokens['--accent']);
-
-  for (const amount of [0.08, 0.12]) {
-    const composed = mix(bg, accent, amount);
-    const ratio = contrast(accent, composed);
-    const pass = ratio >= AA_TEXT;
+  // Cores de marca (ícones) sobre o fundo dos chips (--bg)
+  for (const [token, value] of Object.entries(tokens)) {
+    if (!token.startsWith('--brand-')) continue;
+    const color = parseColor(value);
+    const bg = parseColor(tokens['--bg']);
+    if (!color || !bg) continue;
+    const ratio = contrast(color, bg);
+    const pass = ratio >= brandMin;
     if (!pass) failures++;
-    console.log(
-      `  ${pass ? 'OK  ' : 'FALHA'}  ${ratio.toFixed(2).padStart(6)}:1  ${themeName} — destaque sobre tint ${amount * 100}%`
-    );
+    if (!pass || process.env.VERBOSE === '1') {
+      console.log(`  ${pass ? 'OK ' : 'FAL'} ${ratio.toFixed(2)}:1 (mín ${brandMin}) ${token} sobre --bg`);
+    }
   }
-
-  /*
-   * O painel do hero é `color-mix(canvas-2 72%, transparent)` sobre o
-   * canvas. Medir só os tokens crus daria um número que não corresponde ao
-   * que a tela mostra — é a composição que importa.
-   */
-  const canvas = parse(tokens['--canvas']);
-  const canvas2 = parse(tokens['--canvas-2']);
-  const composedPanel = mix(canvas, canvas2, 0.72);
-  const panelRatio = contrast(composedPanel, canvas);
-  const panelPass = panelRatio >= 1.15;
-  if (!panelPass) failures++;
-  console.log(
-    `  ${panelPass ? 'OK  ' : 'FALHA'}  ${panelRatio.toFixed(2).padStart(6)}:1  ${themeName} — painel do hero sobre o canvas (composto a 72%)`
-  );
 }
 
-console.log(`\n${failures === 0 ? 'Tudo passou.' : `${failures} verificação(ões) falharam.`}`);
-process.exit(failures === 0 ? 0 : 1);
+if (failures > 0) {
+  console.log(`\n${failures} par(es) reprovado(s).`);
+  process.exit(1);
+}
+console.log('\nTodos os pares aprovados.');

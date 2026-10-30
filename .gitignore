@@ -25,3 +25,7 @@ dist-ssr
 
 .vercel
 .env*
+
+# Evidências locais de validação e backups de sessão — não vão para o repositório
+output/
+tmp/

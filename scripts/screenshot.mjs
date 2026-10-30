@@ -38,7 +38,7 @@ const SHOTS = [
   { name: 'desktop-1440', width: 1440, height: 900, dpr: 1 },
   { name: 'desktop-1440-exp', width: 1440, height: 900, dpr: 1, scrollTo: 'experiencia' },
   { name: 'desktop-1440-proj', width: 1440, height: 900, dpr: 1, scrollTo: 'projetos' },
-  { name: 'desktop-1440-form', width: 1440, height: 900, dpr: 1, scrollTo: 'formacao' },
+  { name: 'desktop-1440-form', width: 1440, height: 900, dpr: 1, scrollTo: 'sobre' },
   { name: 'desktop-1440-contato', width: 1440, height: 900, dpr: 1, scrollTo: 'contato' },
   { name: 'desktop-1920', width: 1920, height: 1000, dpr: 1 },
   { name: 'ultrawide-2560', width: 2560, height: 1100, dpr: 1 },
@@ -162,7 +162,7 @@ try {
             const el = document.getElementById(${JSON.stringify(shot.scrollTo)});
             if (!el) return;
             const h = parseInt(getComputedStyle(document.documentElement)
-              .getPropertyValue('--header-h'), 10) || 64;
+              .getPropertyValue('--nav-h'), 10) || 64;
             window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - h);
           })()`,
         });

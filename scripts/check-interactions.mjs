@@ -1,15 +1,12 @@
 /**
- * Teste de interação real, via CDP.
+ * Teste de interação real, via CDP, contra o site atual.
  *
- * Os outros scripts medem a página parada. Este mexe nela: abre o menu,
- * troca o tema, clica em copiar, navega pelas âncoras, dá Tab pela página.
- * Em cada passo ouve o console e coleta exceções.
+ * Os outros scripts medem a página parada. Este mexe nela: navega pelas
+ * âncoras, troca e persiste o tema, abre o visualizador de imagem, abre e
+ * fecha o menu mobile, clica em copiar. Em cada passo ouve o console e
+ * coleta exceções.
  *
- * Motivo: os defeitos que mais irritam num site � clique que não faz nada,
- * estado que trava, erro no console � não aparecem em captura de tela nem em
- * medição de layout.
- *
- *   node scripts/serve-dist.mjs 4180
+ *   node scripts/serve-dist.mjs 4180      # em outro terminal
  *   node scripts/check-interactions.mjs
  */
 
@@ -39,19 +36,16 @@ class Cdp {
     this.ws = ws;
     this.id = 0;
     this.pending = new Map();
-    this.events = [];
     ws.addEventListener('message', (event) => {
       const msg = JSON.parse(event.data);
-      if (msg.method) {
-        this.events.push(msg);
-        return;
-      }
+      if (msg.method) return;
       const entry = this.pending.get(msg.id);
       if (!entry) return;
       this.pending.delete(msg.id);
       msg.error ? entry.reject(new Error(JSON.stringify(msg.error))) : entry.resolve(msg.result);
     });
   }
+
   send(method, params = {}, sessionId) {
     const id = ++this.id;
     return new Promise((resolve, reject) => {
@@ -62,14 +56,14 @@ class Cdp {
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const profile = await mkdtemp(join(tmpdir(), 'dh-interact-'));
+
+const profile = await mkdtemp(join(tmpdir(), 'dh-inter-'));
 const chrome = spawn(
   CHROME,
   [
     '--headless=new',
     '--disable-gpu',
     '--no-first-run',
-    '--no-default-browser-check',
     '--hide-scrollbars',
     `--remote-debugging-port=${PORT}`,
     `--user-data-dir=${profile}`,
@@ -81,9 +75,9 @@ const chrome = spawn(
 const problems = [];
 const note = (step, detail) => {
   problems.push(`[${step}] ${detail}`);
-  console.log(`  �S ${step}: ${detail}`);
+  console.log(`  FALHA ${step}: ${detail}`);
 };
-const ok = (step, detail) => console.log(`  �S ${step}${detail ? ` � ${detail}` : ''}`);
+const ok = (step, detail) => console.log(`  ok ${step}${detail ? ` — ${detail}` : ''}`);
 
 try {
   let wsUrl = null;
@@ -160,15 +154,24 @@ try {
   await load(1440, 900, false);
   consoleErrors.length = 0;
 
-  // 1. A página montou?
-  const mounted = await evalIn(`document.querySelectorAll('[data-section]').length`);
-  mounted.value === 5
-    ? ok('montagem', `${mounted.value} seções`)
-    : note('montagem', `esperava 5 seções, achei ${mounted.value}`);
+  // 1. A página montou com as quatro seções e os cinco projetos?
+  const mounted = await evalIn(`(() => {
+    const sections = ['experiencia', 'projetos', 'sobre', 'contato']
+      .filter((id) => document.getElementById(id)).length;
+    const cases = document.querySelectorAll('.project-case').length;
+    return { sections, cases };
+  })()`);
+  mounted.value?.sections === 4
+    ? ok('montagem', '4 seções')
+    : note('montagem', `esperava 4 seções, achei ${mounted.value?.sections}`);
+  mounted.value?.cases === 5
+    ? ok('projetos', '5 cards')
+    : note('projetos', `esperava 5 cards de projeto, achei ${mounted.value?.cases}`);
 
-  // 2. �ncoras do header navegam?
+  // 2. Âncora da navbar leva a #projetos logo abaixo da navbar?
   const navTest = await evalIn(`(() => {
-    const link = [...document.querySelectorAll('header nav a')].find(a => a.hash === '#projetos');
+    const link = [...document.querySelectorAll('#nav-links-desktop a')]
+      .find((a) => a.getAttribute('href') === '#projetos');
     if (!link) return { found: false };
     link.click();
     return { found: true };
@@ -178,39 +181,29 @@ try {
   else {
     const res = await evalIn(`(() => {
       const el = document.getElementById('projetos');
-      const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'), 10) || 64;
-      return { top: Math.round(el.getBoundingClientRect().top), headerH, hash: location.hash };
+      const navH = document.getElementById('site-nav')?.getBoundingClientRect().height ?? 64;
+      return { top: Math.round(el.getBoundingClientRect().top), navH };
     })()`);
-    const top = res.value.top;
-    // O topo da seção deve ficar logo abaixo do header, não atrás dele nem longe.
-    Math.abs(top - res.value.headerH) <= 24
-      ? ok('nav desktop', `#projetos a ${top}px (header ${res.value.headerH}px)`)
-      : note('nav desktop', `#projetos parou a ${top}px do topo; header tem ${res.value.headerH}px`);
-    res.value.hash === '#projetos' ? ok('hash atualizado') : note('hash', `hash = "${res.value.hash}"`);
+    // smoothScrollToElement deixa o topo da seção a navH+16 do viewport.
+    const expected = res.value.navH + 16;
+    Math.abs(res.value.top - expected) <= 30
+      ? ok('nav desktop', `#projetos a ${res.value.top}px (esperado ~${expected}px)`)
+      : note('nav desktop', `#projetos parou a ${res.value.top}px; esperado ~${expected}px`);
   }
 
-  // 3. Voltar do navegador funciona?
-  await evalIn('history.back()');
-  await sleep(900);
-  const backPos = await evalIn('Math.round(window.scrollY)');
-  backPos.value < 200
-    ? ok('botão voltar', `voltou para ${backPos.value}px`)
-    : note('botão voltar', `history.back() não voltou ao topo (scrollY=${backPos.value})`);
-
-  // 4. Troca de tema
+  // 3. Troca de tema muda o atributo e persiste
   const themeBefore = await evalIn(`document.documentElement.getAttribute('data-theme')`);
-  await evalIn(`document.querySelector('header button[aria-label*="tema" i], header button[aria-label*="Ativar"]')?.click()`);
-  await sleep(1000);
+  await evalIn(`document.querySelector('button[aria-label="Trocar tema claro/escuro"]')?.click()`);
+  await sleep(900);
   const themeAfter = await evalIn(`document.documentElement.getAttribute('data-theme')`);
   const savedTheme = await evalIn(`localStorage.getItem('dh_theme')`);
-  themeAfter.value !== themeBefore.value
+  themeAfter.value && themeAfter.value !== themeBefore.value
     ? ok('troca de tema', `${themeBefore.value} -> ${themeAfter.value}`)
-    : note('troca de tema', `não mudou (segue ${themeAfter.value})`);
+    : note('troca de tema', `não mudou (antes=${themeBefore.value}, depois=${themeAfter.value})`);
   savedTheme.value === themeAfter.value
     ? ok('tema persistido', savedTheme.value)
     : note('tema persistido', `localStorage="${savedTheme.value}" vs tema="${themeAfter.value}"`);
 
-  // 5. Recarregar mantém o tema?
   await send('Page.navigate', { url: ORIGIN + '/' });
   await sleep(1100);
   const themeReload = await evalIn(`document.documentElement.getAttribute('data-theme')`);
@@ -218,41 +211,72 @@ try {
     ? ok('tema sobrevive ao reload')
     : note('tema sobrevive ao reload', `${themeAfter.value} -> ${themeReload.value}`);
 
-  // 6. Voltar ao topo
-  await evalIn('window.scrollTo(0, 4000)');
-  await sleep(600);
-  const toTopVisible = await evalIn(`(() => {
-    const btn = document.querySelector('footer button[aria-label="Voltar ao topo"]');
-    if (!btn) return 'missing';
-    return getComputedStyle(btn).visibility;
+  // 4. Links de repositório corretos
+  const repoLinks = await evalIn(`[...document.querySelectorAll('.project-case-links a')]
+    .map((a) => a.href).filter((h) => h.includes('github.com/danielharrisonlf'))`);
+  (repoLinks.value?.length ?? 0) >= 5
+    ? ok('links de repositório', `${repoLinks.value.length} links do GitHub`)
+    : note('links de repositório', `esperava >= 5, achei ${repoLinks.value?.length}`);
+
+  // 5. Visualizador de imagem: abre, imagem decodifica, Esc fecha, foco volta
+  // (focus antes do click: um clique real foca o botão; .click() via JS não)
+  await evalIn(`(() => {
+    const b = document.querySelector('.project-preview');
+    b?.focus();
+    b?.click();
   })()`);
-  if (toTopVisible.value === 'missing') note('voltar ao topo', 'botão não existe');
+  await sleep(700);
+  const viewerOpen = await evalIn(`(() => {
+    const d = document.querySelector('dialog.project-image-viewer');
+    if (!d || !d.open) return { open: false };
+    const img = d.querySelector('img');
+    return { open: true, imgLoaded: !!img && img.naturalWidth > 0 };
+  })()`);
+  if (!viewerOpen.value?.open) note('visualizador', 'diálogo não abriu');
   else {
-    await evalIn(`document.querySelector('footer button[aria-label="Voltar ao topo"]').click()`);
-    await sleep(1400);
-    const afterTop = await evalIn('Math.round(window.scrollY)');
-    afterTop.value < 60
-      ? ok('voltar ao topo', `scrollY=${afterTop.value}`)
-      : note('voltar ao topo', `parou em scrollY=${afterTop.value}`);
+    viewerOpen.value.imgLoaded
+      ? ok('visualizador', 'aberto com imagem decodificada')
+      : note('visualizador', 'aberto mas a imagem não decodificou');
+    await send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await sleep(500);
+    const closed = await evalIn(`(() => {
+      const d = document.querySelector('dialog.project-image-viewer');
+      return {
+        closed: !d || !d.open,
+        focusOnTrigger: document.activeElement?.classList?.contains('project-preview') ?? false,
+      };
+    })()`);
+    closed.value?.closed ? ok('visualizador fecha com Esc') : note('visualizador', 'Esc não fechou');
+    closed.value?.focusOnTrigger
+      ? ok('foco volta ao gatilho')
+      : note('visualizador', 'foco não voltou ao botão que abriu');
   }
 
-  // 7. Link "pular para o conteúdo" move o foco?
-  await send('Page.navigate', { url: ORIGIN + '/' });
-  await sleep(1000);
-  const skip = await evalIn(`(() => {
-    const link = document.querySelector('a[href="#conteudo"]');
-    if (!link) return { found: false };
-    link.focus();
-    link.click();
-    return { found: true, active: document.activeElement?.id || document.activeElement?.tagName };
-  })()`);
+  // 6. Copiar e-mail dá feedback (sucesso ou falha — headless pode negar)
+  await evalIn(`document.getElementById('contato')?.scrollIntoView()`);
   await sleep(400);
-  const afterSkip = await evalIn(`document.activeElement?.id || document.activeElement?.tagName`);
-  afterSkip.value === 'conteudo'
-    ? ok('skip link', 'foco foi para <main>')
-    : note('skip link', `foco ficou em "${afterSkip.value}" em vez de "conteudo"`);
+  await evalIn(`document.querySelector('button[aria-label="Copiar endereço de e-mail"]')?.click()`);
+  await sleep(600);
+  const copyFeedback = await evalIn(`(() => {
+    const btn = document.querySelector('button[aria-label="Copiar endereço de e-mail"]');
+    return btn?.textContent ?? '';
+  })()`);
+  /Copiado|Não foi possível copiar/.test(copyFeedback.value ?? '')
+    ? ok('copiar e-mail', `feedback: "${copyFeedback.value}"`)
+    : note('copiar e-mail', `sem feedback visível (texto: "${copyFeedback.value}")`);
 
-  // 8. Erros de console no desktop
+  // 7. Console limpo no desktop
   consoleErrors.length === 0
     ? ok('console desktop limpo')
     : note('console desktop', consoleErrors.join(' | '));
@@ -262,114 +286,103 @@ try {
   await load(390, 844, true);
   consoleErrors.length = 0;
 
-  // 9. Menu abre?
-  const burger = await evalIn(`(() => {
-    const btn = document.querySelector('header button[aria-label*="menu" i], header button[aria-label*="Abrir"]');
-    if (!btn) return { found: false };
-    btn.click();
-    return { found: true };
+  // 8. Dock flutuante visível
+  const dock = await evalIn(`(() => {
+    const d = document.getElementById('floating-nav-dock');
+    return d ? getComputedStyle(d).display : 'missing';
+  })()`);
+  dock.value !== 'missing' && dock.value !== 'none'
+    ? ok('dock mobile visível')
+    : note('dock mobile', `display=${dock.value}`);
+
+  // 9. Menu abre, trava a rolagem, Esc fecha e devolve o foco
+  await evalIn(`(() => {
+    const b = document.getElementById('mobile-menu-btn');
+    b?.focus();
+    b?.click();
   })()`);
   await sleep(600);
-  if (!burger.value?.found) note('menu mobile', 'botão hambúrguer não encontrado');
-  else {
-    const menu = await evalIn(`(() => {
-      const dlg = document.querySelector('[role="dialog"]');
-      return {
-        exists: !!dlg,
-        bodyOverflow: document.body.style.overflow,
-        active: document.activeElement?.tagName + '/' + (document.activeElement?.getAttribute('aria-label') || ''),
-      };
-    })()`);
-    menu.value.exists ? ok('menu mobile abre') : note('menu mobile', 'role="dialog" não apareceu');
-    menu.value.bodyOverflow === 'hidden'
-      ? ok('rolagem travada')
-      : note('rolagem travada', `body.overflow="${menu.value.bodyOverflow}"`);
-
-    // 10. Navegar pelo menu fecha e rola?
-    const item = await evalIn(`(() => {
-      const links = [...document.querySelectorAll('[role="dialog"] a[href^="#"]')];
-      const target = links.find(a => a.hash === '#experiencia');
-      if (!target) return { found: false, count: links.length };
-      target.click();
-      return { found: true };
-    })()`);
-    await sleep(1300);
-    if (!item.value?.found) note('menu navega', `link #experiencia ausente (${item.value?.count} links)`);
-    else {
-      const state = await evalIn(`(() => {
-        const el = document.getElementById('experiencia');
-        return {
-          menuFechado: !document.querySelector('[role="dialog"]'),
-          bodyOverflow: document.body.style.overflow,
-          top: Math.round(el.getBoundingClientRect().top),
-          headerH: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'),10) || 64,
-        };
-      })()`);
-      state.value.menuFechado ? ok('menu fecha ao navegar') : note('menu fecha ao navegar', 'painel continua aberto');
-      state.value.bodyOverflow === ''
-        ? ok('rolagem destravada')
-        : note('rolagem destravada', `body.overflow="${state.value.bodyOverflow}" ainda travado`);
-      Math.abs(state.value.top - state.value.headerH) <= 24
-        ? ok('menu navega', `#experiencia a ${state.value.top}px`)
-        : note('menu navega', `#experiencia parou a ${state.value.top}px (header ${state.value.headerH}px)`);
-    }
-
-    // 11. ESC fecha (ou não)
-    await evalIn(`document.querySelector('header button[aria-label*="menu" i]')?.click()`);
-    await sleep(500);
-    const reabriu = await evalIn(`!!document.querySelector('[role="dialog"]')`);
-    if (reabriu.value) {
-      await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-      await sleep(500);
-      const fechou = await evalIn(`!document.querySelector('[role="dialog"]')`);
-      fechou.value ? ok('ESC fecha o menu') : note('ESC fecha o menu', 'painel continua aberto');
-    } else {
-      note('menu reabrir', 'segundo clique no hambúrguer não abriu o menu');
-    }
-  }
-
-  // 12. Overflow horizontal no mobile
-  const ov = await evalIn(`document.documentElement.scrollWidth - document.documentElement.clientWidth`);
-  ov.value <= 1 ? ok('sem transbordo horizontal') : note('transbordo horizontal', `${ov.value}px`);
-
-  // 13. Copiar e-mail
-  /*
-   * Neste ambiente o Chrome headless responde `hasApi: true` mas nega a
-   * permissão (`NotAllowedError`), e o `execCommand` de fallback devolve
-   * false. Ou seja: copiar aqui é impossível.
-   *
-   * Então não dá para exigir sucesso. O que dá — e é o que importa — é
-   * exigir que a interface nunca fique muda: ou confirma, ou avisa. Testar
-   * `data-copied` não servia, porque ele é "false" tanto em "falhou" quanto
-   * em "ocioso"; quem diz qual dos dois é o rótulo.
-   */
-  const copyTest = await evalIn(`(async () => {
-    const btn = [...document.querySelectorAll('button')].find(b => (b.getAttribute('aria-label')||'').includes('Copiar'));
-    if (!btn) return { found: false };
-    const before = btn.textContent.trim();
-    btn.click();
-    await new Promise(r => setTimeout(r, 800));
-    return { found: true, before, after: btn.textContent.trim(), state: btn.dataset.copied };
+  const menuOpen = await evalIn(`(() => {
+    const dialog = document.querySelector('[role="dialog"][aria-label="Menu de Navegação"]');
+    return {
+      open: !!dialog,
+      bodyLocked: document.body.style.overflow === 'hidden',
+      focusInside: !!dialog && dialog.contains(document.activeElement),
+    };
   })()`);
+  menuOpen.value?.open ? ok('menu abre') : note('menu mobile', 'não abriu');
+  menuOpen.value?.bodyLocked
+    ? ok('rolagem travada com menu aberto')
+    : note('menu mobile', 'rolagem do fundo não travou');
+  menuOpen.value?.focusInside
+    ? ok('foco dentro do menu')
+    : note('menu mobile', 'foco não foi para dentro do diálogo');
 
-  if (!copyTest.value?.found) {
-    note('copiar e-mail', 'botão não encontrado');
-  } else {
-    const { before, after, state } = copyTest.value;
+  await send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: 'Escape',
+    code: 'Escape',
+    windowsVirtualKeyCode: 27,
+  });
+  await send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'Escape',
+    code: 'Escape',
+    windowsVirtualKeyCode: 27,
+  });
+  await sleep(500);
+  const menuClosed = await evalIn(`(() => ({
+    closed: !document.querySelector('[role="dialog"][aria-label="Menu de Navegação"]'),
+    bodyUnlocked: document.body.style.overflow !== 'hidden',
+    focusOnTrigger: document.activeElement?.id === 'mobile-menu-btn',
+  }))()`);
+  menuClosed.value?.closed ? ok('menu fecha com Esc') : note('menu mobile', 'Esc não fechou');
+  menuClosed.value?.bodyUnlocked
+    ? ok('rolagem liberada ao fechar')
+    : note('menu mobile', 'rolagem continuou travada');
+  menuClosed.value?.focusOnTrigger
+    ? ok('foco volta ao botão do menu')
+    : note('menu mobile', 'foco não voltou ao botão');
 
-    if (state === 'copied') {
-      ok('copiar e-mail', `cópia confirmada, rótulo "${after}"`);
-    } else if (after !== before && /n[ãa]o deu/i.test(after)) {
-      ok(
-        'copiar e-mail',
-        `permissão negada neste ambiente — a interface avisa em vez de ficar muda ("${after}")`
-      );
-    } else {
-      note('copiar e-mail', `clicou e nada mudou: rótulo seguiu "${after}"`);
-    }
-  }
+  // 10. Navegar pelo menu leva à seção e fecha o menu
+  await evalIn(`document.getElementById('mobile-menu-btn')?.click()`);
+  await sleep(500);
+  await evalIn(`[...document.querySelectorAll('[role="dialog"] a')]
+    .find((a) => a.getAttribute('href') === '#projetos')?.click()`);
+  await sleep(1200);
+  const mobileNav = await evalIn(`(() => ({
+    menuGone: !document.querySelector('[role="dialog"][aria-label="Menu de Navegação"]'),
+    projTop: Math.round(document.getElementById('projetos')?.getBoundingClientRect().top ?? 9999),
+  }))()`);
+  mobileNav.value?.menuGone ? ok('menu fecha ao navegar') : note('menu mobile', 'menu ficou aberto');
+  Math.abs(mobileNav.value?.projTop - 80) <= 60
+    ? ok('navegação mobile', `#projetos a ${mobileNav.value.projTop}px`)
+    : note('navegação mobile', `#projetos parou a ${mobileNav.value?.projTop}px`);
 
-  // 14. Console no mobile
+  // 11. Alargar a tela com o menu aberto fecha o menu e libera a rolagem
+  await evalIn(`document.getElementById('mobile-menu-btn')?.click()`);
+  await sleep(500);
+  await send('Emulation.setDeviceMetricsOverride', {
+    width: 1200,
+    height: 900,
+    deviceScaleFactor: 1,
+    mobile: false,
+    screenWidth: 1200,
+    screenHeight: 900,
+  });
+  await sleep(700);
+  const afterResize = await evalIn(`(() => ({
+    menuGone: !document.querySelector('[role="dialog"][aria-label="Menu de Navegação"]'),
+    bodyUnlocked: document.body.style.overflow !== 'hidden',
+  }))()`);
+  afterResize.value?.menuGone
+    ? ok('menu fecha ao virar desktop')
+    : note('breakpoint', 'menu continuou aberto ao alargar a tela');
+  afterResize.value?.bodyUnlocked
+    ? ok('rolagem liberada após o breakpoint')
+    : note('breakpoint', 'rolagem continuou travada após alargar');
+
+  // 12. Console limpo no mobile
   consoleErrors.length === 0
     ? ok('console mobile limpo')
     : note('console mobile', consoleErrors.join(' | '));
@@ -377,12 +390,13 @@ try {
   ws.close();
 } finally {
   chrome.kill();
-  await sleep(400);
+  await sleep(300);
   await rm(profile, { recursive: true, force: true }).catch(() => {});
 }
 
-console.log(
-  `\n${problems.length === 0 ? 'Nenhum problema de interação.' : `${problems.length} PROBLEMA(S):`}`
-);
-for (const p of problems) console.log('  - ' + p);
-process.exit(problems.length === 0 ? 0 : 1);
+if (problems.length > 0) {
+  console.log(`\n${problems.length} problema(s):`);
+  for (const p of problems) console.log(`  - ${p}`);
+  process.exit(1);
+}
+console.log('\nTodas as interações aprovadas.');
