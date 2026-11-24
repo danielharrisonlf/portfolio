@@ -115,4 +115,6 @@ Nova apresentação publicada em [danielharrisonlf.vercel.app](https://danielhar
 ### Ícones e infraestrutura
 - `TechIcon.tsx`: adicionados ícones dedicados para Fastify, Zod, Better Auth, OAuth 2.1, Flyway, pgvector, BullMQ, Assistentes de IA, Kotlin, Android, Rust, Tauri e TLS.
 - Containerização e deploy self-hosted no Dokploy (`oO-xn7s9yfM1PpbkCMUbO` / `portfolio-fvufvc`, domínio `https://danielharrison.noxlabs.tech/`) via `Dockerfile` multi-stage (`node:24-alpine` + `nginx:1.27-alpine`) e `.dockerignore` ampliado para excluir `output`, `tmp`, `.vercel` e `.env*`.
+- **Rede Sarah (out. 2021 — set. 2023)**: adicionada experiência como Analista de Redes, Suporte e Segurança (regime de meio período em contrato temporário não renovável de 2 anos), conforme informado pelo autor.
+- **Currículo PDF**: `public/cv/Daniel-Harrison-CV.pdf` atualizado com a versão mais recente fornecida pelo autor.
 

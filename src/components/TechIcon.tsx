@@ -360,6 +360,18 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   if (norm.includes('redes')) {
     return <TbNetwork size={size} className={className} style={iconStyle} />;
   }
+  // Segurança da Informação
+  if (norm.includes('seguranç') || norm.includes('seguranc')) {
+    return <TbShieldLock size={size} className={className} style={iconStyle} />;
+  }
+  // Suporte TI
+  if (norm.includes('suporte')) {
+    return <TbTerminal2 size={size} className={className} style={iconStyle} />;
+  }
+  // Infraestrutura
+  if (norm.includes('infraestrutura')) {
+    return <TbCpu size={size} className={className} style={iconStyle} />;
+  }
   // Sistemas Operacionais
   if (norm.includes('sistemas operacionais') || norm === 'so') {
     return <TbTerminal2 size={size} className={className} style={iconStyle} />;

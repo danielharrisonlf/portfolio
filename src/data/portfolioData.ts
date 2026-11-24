@@ -109,6 +109,18 @@ export const experiences: ExperienceItem[] = [
     ],
     techs: ['Node.js', 'React', 'MySQL'],
   },
+  {
+    role: 'Analista de Redes, Suporte e Segurança (Meio Período)',
+    company: 'Rede Sarah',
+    period: 'out. 2021 — set. 2023',
+    context:
+      'Rede Sarah de Hospitais de Reabilitação é referência nacional em atendimento hospitalar e neurorreabilitação. Atuação em regime de meio período por contrato temporário não renovável de 2 anos.',
+    bullets: [
+      'Suporte técnico à operação hospitalar, atuando na manutenção de estações de trabalho, atendimento a incidentes e continuidade dos serviços de TI.',
+      'Apoio na administração de infraestrutura de redes, diagnóstico de conectividade e aplicação de boas práticas e rotinas de segurança da informação.',
+    ],
+    techs: ['Redes', 'Suporte TI', 'Segurança da Informação', 'Infraestrutura'],
+  },
 ];
 
 /** Projetos reais conferidos nos repositórios locais e no GitHub. Fontes: docs/portfolio-sources.md. */
