@@ -24,6 +24,12 @@ import {
   SiReactquery,
   SiTailwindcss,
   SiTurborepo,
+  SiFastify,
+  SiZod,
+  SiKotlin,
+  SiRust,
+  SiTauri,
+  SiAndroid,
 } from 'react-icons/si';
 import {
   FaAws,
@@ -41,6 +47,7 @@ import {
   TbArrowsExchange,
   TbBoxMultiple,
   TbDatabase,
+  TbDatabaseImport,
   TbCodeDots,
   TbNetwork,
   TbTerminal2,
@@ -57,6 +64,11 @@ import {
   TbWand,
   TbBrain,
   TbSparkles,
+  TbShieldLock,
+  TbKey,
+  TbStack2,
+  TbVectorTriangle,
+  TbLock,
 } from 'react-icons/tb';
 
 interface TechIconProps {
@@ -105,6 +117,49 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   // NestJS
   if (norm.includes('nest') || norm === 'nestjs') {
     return <SiNestjs size={size} color="#E0234E" className={className} style={iconStyle} />;
+  }
+  // Fastify
+  if (norm.includes('fastify')) {
+    return <SiFastify size={size} className={className} style={iconStyle} />;
+  }
+  // Zod
+  if (norm === 'zod' || norm.includes('zod')) {
+    return <SiZod size={size} color="#3E67B1" className={className} style={iconStyle} />;
+  }
+  // Better Auth / OAuth / TLS
+  if (norm.includes('better auth') || norm.includes('betterauth')) {
+    return <TbShieldLock size={size} className={className} style={iconStyle} />;
+  }
+  if (norm.includes('oauth')) {
+    return <TbKey size={size} className={className} style={iconStyle} />;
+  }
+  if (norm === 'tls' || norm.includes('tls')) {
+    return <TbLock size={size} className={className} style={iconStyle} />;
+  }
+  // Flyway
+  if (norm.includes('flyway')) {
+    return <TbDatabaseImport size={size} className={className} style={iconStyle} />;
+  }
+  // pgvector
+  if (norm.includes('pgvector')) {
+    return <TbVectorTriangle size={size} className={className} style={iconStyle} />;
+  }
+  // BullMQ
+  if (norm.includes('bullmq')) {
+    return <TbStack2 size={size} className={className} style={iconStyle} />;
+  }
+  // Kotlin / Android / Rust / Tauri
+  if (norm.includes('kotlin')) {
+    return <SiKotlin size={size} color="#7F52FF" className={className} style={iconStyle} />;
+  }
+  if (norm.includes('android')) {
+    return <SiAndroid size={size} color="#3DDC84" className={className} style={iconStyle} />;
+  }
+  if (norm === 'rust' || norm.includes('rust')) {
+    return <SiRust size={size} className={className} style={iconStyle} />;
+  }
+  if (norm.includes('tauri')) {
+    return <SiTauri size={size} color="#24C8DB" className={className} style={iconStyle} />;
   }
   // AWS / Amazon Web Services / SQS / S3
   if (norm.includes('aws') || norm.includes('amazon')) {
@@ -163,6 +218,10 @@ export const TechIcon: React.FC<TechIconProps> = ({ name, size = 15, className, 
   // Hermes Agente
   if (norm.includes('hermes')) {
     return <TbRobot size={size} className={className} style={iconStyle} />;
+  }
+  // Assistentes de IA
+  if (norm.includes('assistente')) {
+    return <TbSparkles size={size} className={className} style={iconStyle} />;
   }
   // Agentes / Agente
   if (norm.includes('agente')) {

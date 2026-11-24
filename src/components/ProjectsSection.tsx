@@ -75,18 +75,20 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects }) =>
                     </li>
                   ))}
                 </ul>
-                <div className="project-case-links">
-                  {project.repoUrl && (
-                    <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" aria-label={`Ver código de ${project.name} no GitHub`}>
-                      <FaGithub size={15} /> Código no GitHub
-                    </a>
-                  )}
-                  {project.demoUrl && (
-                    <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" aria-label={`Abrir demo de ${project.name}`}>
-                      <TbExternalLink size={15} /> Ver demonstração
-                    </a>
-                  )}
-                </div>
+                {(project.repoUrl || project.demoUrl) && (
+                  <div className="project-case-links">
+                    {project.repoUrl && (
+                      <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" aria-label={`Ver código de ${project.name} no GitHub`}>
+                        <FaGithub size={15} /> Código no GitHub
+                      </a>
+                    )}
+                    {project.demoUrl && (
+                      <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" aria-label={`Abrir demo de ${project.name}`}>
+                        <TbExternalLink size={15} /> Ver demonstração
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </article>
           );

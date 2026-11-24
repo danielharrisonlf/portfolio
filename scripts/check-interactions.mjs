@@ -154,7 +154,7 @@ try {
   await load(1440, 900, false);
   consoleErrors.length = 0;
 
-  // 1. A página montou com as quatro seções e os cinco projetos?
+  // 1. A página montou com as quatro seções e os sete projetos?
   const mounted = await evalIn(`(() => {
     const sections = ['experiencia', 'projetos', 'sobre', 'contato']
       .filter((id) => document.getElementById(id)).length;
@@ -164,9 +164,9 @@ try {
   mounted.value?.sections === 4
     ? ok('montagem', '4 seções')
     : note('montagem', `esperava 4 seções, achei ${mounted.value?.sections}`);
-  mounted.value?.cases === 5
-    ? ok('projetos', '5 cards')
-    : note('projetos', `esperava 5 cards de projeto, achei ${mounted.value?.cases}`);
+  mounted.value?.cases === 7
+    ? ok('projetos', '7 cards')
+    : note('projetos', `esperava 7 cards de projeto, achei ${mounted.value?.cases}`);
 
   // 2. Âncora da navbar leva a #projetos logo abaixo da navbar?
   const navTest = await evalIn(`(() => {
@@ -211,12 +211,12 @@ try {
     ? ok('tema sobrevive ao reload')
     : note('tema sobrevive ao reload', `${themeAfter.value} -> ${themeReload.value}`);
 
-  // 4. Links de repositório corretos
+  // 4. Links de repositório público corretos (4 projetos com repo público)
   const repoLinks = await evalIn(`[...document.querySelectorAll('.project-case-links a')]
     .map((a) => a.href).filter((h) => h.includes('github.com/danielharrisonlf'))`);
-  (repoLinks.value?.length ?? 0) >= 5
+  (repoLinks.value?.length ?? 0) >= 4
     ? ok('links de repositório', `${repoLinks.value.length} links do GitHub`)
-    : note('links de repositório', `esperava >= 5, achei ${repoLinks.value?.length}`);
+    : note('links de repositório', `esperava >= 4, achei ${repoLinks.value?.length}`);
 
   // 5. Visualizador de imagem: abre, imagem decodifica, Esc fecha, foco volta
   // (focus antes do click: um clique real foca o botão; .click() via JS não)

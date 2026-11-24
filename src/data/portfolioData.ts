@@ -45,8 +45,10 @@ export const practices: string[] = [
   'Webhooks',
   'Websockets',
   'Integrações',
+  'Assistentes de IA',
   'Agentes de IA',
   'MCPs',
+  'OAuth 2.1',
   'Subagentes',
   'Skills & Tools',
   'SDD',
@@ -63,12 +65,25 @@ export const experiences: ExperienceItem[] = [
     context:
       'Encibra é uma consultoria de engenharia com mais de 55 anos de atuação, com projetos em saneamento, transporte, energia e edificações. Desenvolvemos soluções de software para esse ramo.',
     bullets: [
-      "Criei a Central de Suporte Vision 360: portal para clientes abrirem e acompanharem chamados por projeto, com fila de atendimento, controle de prazos, indicadores e escalonamento para o Jira.",
-      'Atuei em um microserviço de notificações multicanal (WhatsApp, Telegram, e-mail, Discord) sobre AWS SQS, responsável pelas integrações de WhatsApp e Telegram: entrega confiável, tratamento de falhas e sem duplicidade de disparos em picos de reprocessamento.',
-      'Projetei um fluxo de upload global direto ao S3 via URLs pré-assinadas, adotado por mais de 10 módulos do sistema.',
-      'Integrei câmeras de monitoramento de obras via protocolo RTSP, estruturando o streaming de vídeo para acompanhamento remoto dos canteiros.',
+      'Atuei no desenvolvimento do OIA (Organismo de Inspeção Acreditada): plataforma para gestão de contratos, fases, inspeções, emissão versionada de certificados com validação pública por QR Code e fluxo multi-etapas de não conformidades (RNCs) com matriz granular de permissões por perfil e contrato, trilha de auditoria, anexos no Amazon S3 e filas AWS SQS (Fastify, Prisma, Better Auth, Flyway, React 19 e TanStack).',
+      'Criei a Central de Suporte Vision 360 (Support App): portal para clientes abrirem e acompanharem chamados por projeto, com fila global de atendimento, controle de prazos/SLA, indicadores operacionais e escalonamento integrado ao Jira, estruturado em monorepo pnpm + Turborepo com NestJS, React 19, contratos Zod e client HTTP tipado via Orval.',
+      'Atuei no microsserviço de notificações multicanal (WhatsApp, Telegram, e-mail e Discord) sobre AWS SQS, responsável pelas integrações de WhatsApp e Telegram: entrega confiável, tratamento de falhas e prevenção de duplicidade de disparos em picos de reprocessamento.',
+      'Projetei um fluxo de upload global direto ao Amazon S3 via URLs pré-assinadas, adotado por mais de 10 módulos da plataforma.',
+      'Integrei câmeras de monitoramento de obras via protocolo RTSP, estruturando a orquestração e o streaming de vídeo para acompanhamento remoto dos canteiros.',
     ],
-    techs: ['NestJS', 'React', 'Prisma', 'PostgreSQL', 'AWS SQS', 'Redis', 'Amazon S3', 'RTSP'],
+    techs: [
+      'NestJS',
+      'Fastify',
+      'React',
+      'Prisma',
+      'PostgreSQL',
+      'Better Auth',
+      'AWS SQS',
+      'Amazon S3',
+      'Redis',
+      'Flyway',
+      'RTSP',
+    ],
   },
   {
     role: 'Full Stack Developer',
@@ -96,18 +111,29 @@ export const experiences: ExperienceItem[] = [
   },
 ];
 
-/** Projetos reais conferidos no GitHub. Fontes: docs/portfolio-sources.md. */
+/** Projetos reais conferidos nos repositórios locais e no GitHub. Fontes: docs/portfolio-sources.md. */
 export const projects: ProjectItem[] = [
   {
-    id: 'whatsapp-control-center',
-    image: '/uploads/projects/whatsapp-control-center.jpg',
+    id: 'gestao-operacional-mcp',
+    image: '/uploads/projects/gestao-operacional-mcp.webp',
     imageWidth: 1440,
     imageHeight: 960,
-    imageAlt: 'Editor de templates do WhatsApp Control Center com formulário e prévia da mensagem, em ambiente de demonstração.',
-    name: 'WhatsApp Control Center',
-    desc: 'Painel integrado à API oficial da Meta para gerenciar contas, números, templates, mensagens e webhooks. Reúne a operação e o diagnóstico das integrações, com acesso por organização e perfil de usuário.',
-    stack: 'React · NestJS · PostgreSQL · Prisma · TanStack Query',
-    repoUrl: 'https://github.com/danielharrisonlf/whatsapp-control-center',
+    imageAlt:
+      'Console de integração MCP da plataforma de gestão operacional: catálogo de ferramentas de leitura e escrita com permissões RBAC exigidas e parâmetros tipados, em ambiente de demonstração.',
+    name: 'Plataforma de Gestão Operacional com Assistente de IA via MCP',
+    desc: 'Plataforma corporativa multi-tenant de gestão de projetos, equipes e sprints projetada para que assistentes de IA (Claude, ChatGPT e Cursor) consultem e executem ações por meio de um servidor MCP (49 ferramentas) autenticado via OAuth 2.1 — respeitando estritamente o RBAC e a organização do usuário logado. Construída em microsserviços NestJS atrás de gateway, com PostgreSQL, Redis/BullMQ, outbox transacional, WebSocket em tempo real e trilha de auditoria imutável.',
+    stack: 'NestJS · React · MCP · OAuth 2.1 · PostgreSQL · Redis · BullMQ · WebSocket',
+  },
+  {
+    id: 'omni-crm-ai',
+    image: '/uploads/projects/omni-crm-inbox.webp',
+    imageWidth: 1440,
+    imageHeight: 960,
+    imageAlt:
+      'Caixa de entrada do Omni CRM AI em tema escuro: fila de conversas, histórico do atendimento, contexto do contato com oportunidades vinculadas e painel lateral de assistência de IA, com dados fictícios.',
+    name: 'Omni CRM AI — Atendimento Omnichannel e Pipeline com IA',
+    desc: 'Solução B2B para equipes comerciais e de atendimento conduzirem conversas do primeiro contato ao fechamento em um único espaço multi-organização. Integra caixa de entrada omnichannel (WhatsApp e chat web incorporável), pipeline de oportunidades, base de conhecimento vetorial com pgvector e assistência de IA sob demanda para resumo de conversas e sugestão de respostas, com autenticação Better Auth e filas em Redis/BullMQ.',
+    stack: 'NestJS · React · PostgreSQL · pgvector · Better Auth · Redis · BullMQ · Zod',
   },
   {
     id: 'clinicflow',
@@ -116,10 +142,33 @@ export const projects: ProjectItem[] = [
     imageHeight: 1000,
     imageAlt:
       'Painel do dia do ClinicFlow: consultas com estado e próximo passo, contadores de aguardando e atrasadas, sala de espera e retornos, com dados de demonstração.',
-    name: 'ClinicFlow — gestão de clínicas',
-    desc: 'Operação de clínica da agenda ao retorno: ciclo da consulta com máquina de estados testável, verificação de disponibilidade por profissional, sala de espera, documentos e tarefas de acompanhamento. Monorepo com API NestJS e frontend React.',
-    stack: 'React · NestJS · Prisma · PostgreSQL · Tailwind · Turborepo',
+    name: 'ClinicFlow — Gestão Operacional de Clínicas',
+    desc: 'Solução ponta a ponta para eliminar o desalinhamento entre recepção, agenda e consultório: centraliza a operação diária com agenda multiprofissional livre de conflitos de horário, ciclo da consulta governado por máquina de estados testável, sala de espera ativa com eventos em tempo real (SSE), documentos clínicos em armazenamento compatível com S3 e funil automático para resgate de faltas e retornos.',
+    stack: 'React · NestJS · Prisma · PostgreSQL · Redis · Amazon S3 · Turborepo',
     repoUrl: 'https://github.com/danielharrisonlf/clinicflow',
+  },
+  {
+    id: 'finflow',
+    image: '/uploads/projects/finflow-painel.webp',
+    imageWidth: 1440,
+    imageHeight: 960,
+    imageAlt:
+      'Painel financeiro do FinFlow em tema escuro: saldo geral, receitas, despesas, próximos vencimentos, fluxo de caixa mensal e distribuição por categoria, com dados de demonstração.',
+    name: 'FinFlow — Plataforma Financeira Multi-Interface com MCP',
+    desc: 'Plataforma de gestão financeira orientada a domínio (valores em centavos inteiros, faturas, parcelamentos, orçamentos e metas) onde uma única API NestJS com contratos Zod compartilhados alimenta quatro interfaces: painel web React, CLI, servidor MCP com 19 ferramentas para assistentes de IA e bot do Telegram com lançamentos rápidos, alertas de limite de orçamento e exportação CSV/OFX.',
+    stack: 'NestJS · React · MCP · Telegram API · Prisma · PostgreSQL · Zod · Turborepo',
+  },
+  {
+    id: 'whatsapp-control-center',
+    image: '/uploads/projects/whatsapp-control-center.jpg',
+    imageWidth: 1440,
+    imageHeight: 960,
+    imageAlt:
+      'Editor de templates do WhatsApp Control Center com formulário e prévia da mensagem, em ambiente de demonstração.',
+    name: 'WhatsApp Control Center — Operação na API Oficial da Meta',
+    desc: 'Central operacional sobre a WhatsApp Cloud API oficial para empresas conduzirem atendimento e disparos em volume sem depender de intervenção técnica. Reúne contas, números, editor de templates com prévia fiel no celular, diagnóstico claro de falhas de envio, webhooks em tempo real, credenciais criptografadas e controle de acesso por organização e perfil.',
+    stack: 'React · NestJS · WhatsApp API · PostgreSQL · Prisma · TanStack Query',
+    repoUrl: 'https://github.com/danielharrisonlf/whatsapp-control-center',
   },
   {
     id: 'mapbox-vision',
@@ -128,8 +177,8 @@ export const projects: ProjectItem[] = [
     imageHeight: 900,
     imageAlt:
       'Mapbox Vision: mapa do Brasil em tema escuro com agrupamentos de estações meteorológicas e inventário lateral de ativos com filtros, em base de demonstração.',
-    name: 'Mapbox Vision — análise geoespacial',
-    desc: 'Prova de conceito geoespacial: mapa interativo com inventário de estações e áreas de cobertura, consultas espaciais executadas no banco (ST_Covers, ST_Intersects) e cruzamento com setores censitários e dados socioeconômicos do IBGE.',
+    name: 'Mapbox Vision — Inteligência Geoespacial com PostGIS',
+    desc: 'Plataforma de análise territorial e cobertura de ativos: combina mapa interativo em Mapbox GL com consultas espaciais nativas no PostgreSQL/PostGIS (ST_Covers, ST_Intersects, ST_Intersection), contrato GeoJSON e cruzamento automatizado com setores censitários e dados socioeconômicos do IBGE para apoiar decisões de cobertura.',
     stack: 'React · Mapbox GL · NestJS · PostGIS · TypeORM',
     repoUrl: 'https://github.com/danielharrisonlf/mapbox',
   },
@@ -139,22 +188,12 @@ export const projects: ProjectItem[] = [
     imageType: 'mobile',
     imageWidth: 720,
     imageHeight: 1600,
-    imageAlt: 'PC Remote Kotlin: painel de controles com atalhos de janelas, captura de tela, calculadora e bloqueio do computador.',
-    name: 'PC Remote — Android nativo',
-    desc: 'Aplicativo Android nativo em Kotlin que se conecta ao companion desktop em Rust e Tauri pela rede local. Permite controlar o computador, transferir arquivos e sincronizar a área de transferência.',
+    imageAlt:
+      'PC Remote Kotlin: painel de controles com atalhos de janelas, captura de tela, calculadora e bloqueio do computador.',
+    name: 'PC Remote — Android Nativo e Companion Desktop',
+    desc: 'Ecossistema de controle remoto local sem dependência de nuvem: aplicativo Android nativo em Kotlin conectado pela LAN com TLS fixado ao companion desktop em Rust e Tauri, oferecendo comandos de mídia e janelas, transferência de arquivos e sincronização de área de transferência.',
     stack: 'Kotlin · Android Views · TLS · Rust · Tauri',
     repoUrl: 'https://github.com/danielharrisonlf/pc-remote-android',
-  },
-  {
-    id: 'fio',
-    image: '/uploads/projects/fio-quadro.png',
-    imageWidth: 1440,
-    imageHeight: 950,
-    imageAlt: 'Quadro Kanban do Fio com candidaturas de demonstração distribuídas por etapa do processo seletivo.',
-    name: 'Fio — acompanhamento de candidaturas',
-    desc: 'Organizador de processos seletivos com quadro Kanban, cadastro de empresas e vagas, follow-ups e visão de resumo. A interface web e a CLI em Go consultam os mesmos recursos de uma API em ASP.NET Core.',
-    stack: 'React · TypeScript · C# · ASP.NET Core · PostgreSQL · Go',
-    repoUrl: 'https://github.com/danielharrisonlf/linkanban',
   },
 ];
 
@@ -206,9 +245,9 @@ export const personalInfo = {
    * de áreas e perdia o "gosto de construir", que é o que diferencia.
    */
   shortBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto, atuando em arquitetura, infraestrutura e desenvolvimento. Hoje construo agentes de IA que rodam em produção.',
+    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e participar das decisões de produto, atuando em arquitetura, infraestrutura e desenvolvimento. Hoje construo assistentes, agentes de IA e servidores MCP que rodam em produção.',
   fullBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto. Atuo em todas as fases do ciclo: arquitetura, infraestrutura e desenvolvimento. Hoje trabalho com engenharia de IA aplicada, construindo agentes que rodam em produção.',
+    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto. Atuo em todas as fases do ciclo: arquitetura, infraestrutura e desenvolvimento. Hoje trabalho com engenharia de IA aplicada, entregando assistentes de IA, agentes e integrações MCP conectados a sistemas reais em produção.',
   photoUrl: '/uploads/backback.webp',
   // Fallback real para navegadores sem WebP (antes apontava para um
   // arquivo byte a byte idêntico ao principal, então nunca serviu de nada).
