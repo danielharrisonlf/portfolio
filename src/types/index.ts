@@ -21,11 +21,20 @@ export interface ExperienceItem {
   techs: string[];
 }
 
+export interface ProjectMedia {
+  src: string;
+  alt: string;
+  caption?: string;
+  width: number;
+  height: number;
+}
+
 export interface ProjectItem {
   id?: string;
   name: string;
   desc: string;
   stack: string;
+  images?: ProjectMedia[];
   image?: string;
   imageAlt?: string;
   imageType?: 'web' | 'mobile';

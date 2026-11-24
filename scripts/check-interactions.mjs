@@ -218,7 +218,15 @@ try {
     ? ok('links de repositório', `${repoLinks.value.length} links do GitHub`)
     : note('links de repositório', `esperava >= 4, achei ${repoLinks.value?.length}`);
 
-  // 5. Visualizador de imagem: abre, imagem decodifica, Esc fecha, foco volta
+  // 5. Carrossel e visualizador de imagem: avança tela, abre, imagem decodifica, ArrowRight troca, Esc fecha, foco volta
+  const carouselBefore = await evalIn(`document.querySelector('.project-carousel-counter')?.textContent?.trim()`);
+  await evalIn(`document.querySelector('.project-arrow-btn[aria-label^="Próxima tela"]')?.click()`);
+  await sleep(350);
+  const carouselAfter = await evalIn(`document.querySelector('.project-carousel-counter')?.textContent?.trim()`);
+  carouselBefore.value === '01/03' && carouselAfter.value === '02/03'
+    ? ok('carrossel', `${carouselBefore.value} -> ${carouselAfter.value}`)
+    : note('carrossel', `esperava 01/03 -> 02/03, obtive ${carouselBefore.value} -> ${carouselAfter.value}`);
+
   // (focus antes do click: um clique real foca o botão; .click() via JS não)
   await evalIn(`(() => {
     const b = document.querySelector('.project-preview');
@@ -230,13 +238,31 @@ try {
     const d = document.querySelector('dialog.project-image-viewer');
     if (!d || !d.open) return { open: false };
     const img = d.querySelector('img');
-    return { open: true, imgLoaded: !!img && img.naturalWidth > 0 };
+    const sub = d.querySelector('.project-image-toolbar-sub')?.textContent?.trim() ?? '';
+    return { open: true, imgLoaded: !!img && img.naturalWidth > 0, sub };
   })()`);
   if (!viewerOpen.value?.open) note('visualizador', 'diálogo não abriu');
   else {
     viewerOpen.value.imgLoaded
-      ? ok('visualizador', 'aberto com imagem decodificada')
+      ? ok('visualizador', `aberto com imagem decodificada (${viewerOpen.value.sub})`)
       : note('visualizador', 'aberto mas a imagem não decodificou');
+    await send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'ArrowRight',
+      code: 'ArrowRight',
+      windowsVirtualKeyCode: 39,
+    });
+    await send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'ArrowRight',
+      code: 'ArrowRight',
+      windowsVirtualKeyCode: 39,
+    });
+    await sleep(350);
+    const viewerNext = await evalIn(`document.querySelector('dialog.project-image-viewer .project-image-toolbar-sub')?.textContent?.trim() ?? ''`);
+    viewerNext.value?.startsWith('03 / 03')
+      ? ok('visualizador navega por teclado', viewerNext.value)
+      : note('visualizador', `ArrowRight não avançou para 03 / 03 (${viewerNext.value})`);
     await send('Input.dispatchKeyEvent', {
       type: 'keyDown',
       key: 'Escape',

@@ -115,33 +115,94 @@ export const experiences: ExperienceItem[] = [
 export const projects: ProjectItem[] = [
   {
     id: 'gestao-operacional-mcp',
-    image: '/uploads/projects/gestao-operacional-mcp.webp',
-    imageWidth: 1440,
-    imageHeight: 960,
-    imageAlt:
-      'Console de integração MCP da plataforma de gestão operacional: catálogo de ferramentas de leitura e escrita com permissões RBAC exigidas e parâmetros tipados, em ambiente de demonstração.',
+    images: [
+      {
+        src: '/uploads/projects/ops-dashboard.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Visão operacional e sprints',
+        alt: 'Visão operacional da plataforma de gestão de projetos em tema escuro: projetos ativos, sprints em andamento, prazos e resumo por equipe, em ambiente de demonstração.',
+      },
+      {
+        src: '/uploads/projects/ops-kanban.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Quadro Kanban e prioridades',
+        alt: 'Quadro Kanban da plataforma de gestão operacional em tema escuro com colunas Backlog, A fazer, Em andamento, Em revisão e Concluído, etiquetas de prioridade e tarefas bloqueadas.',
+      },
+      {
+        src: '/uploads/projects/ops-mcp.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Integração de agentes via MCP',
+        alt: 'Console de integração MCP da plataforma em tema escuro: catálogo de ferramentas de leitura e escrita com permissões RBAC exigidas e parâmetros tipados.',
+      },
+    ],
     name: 'Plataforma de Gestão Operacional com Assistente de IA via MCP',
-    desc: 'Plataforma corporativa multi-tenant de gestão de projetos, equipes e sprints projetada para que assistentes de IA (Claude, ChatGPT e Cursor) consultem e executem ações por meio de um servidor MCP (49 ferramentas) autenticado via OAuth 2.1 — respeitando estritamente o RBAC e a organização do usuário logado. Construída em microsserviços NestJS atrás de gateway, com PostgreSQL, Redis/BullMQ, outbox transacional, WebSocket em tempo real e trilha de auditoria imutável.',
+    desc: 'Plataforma corporativa multi-tenant de gestão de projetos, equipes e sprints projetada para que assistentes de IA (Claude, ChatGPT e Cursor) consultem e executem ações via protocolo MCP (49 ferramentas) com autenticação OAuth 2.1 — respeitando estritamente o RBAC e a organização do usuário logado. Construída em microsserviços NestJS atrás de gateway, com PostgreSQL, Redis/BullMQ, outbox transacional, WebSocket em tempo real e trilha de auditoria imutável.',
     stack: 'NestJS · React · MCP · OAuth 2.1 · PostgreSQL · Redis · BullMQ · WebSocket',
   },
   {
     id: 'omni-crm-ai',
-    image: '/uploads/projects/omni-crm-inbox.webp',
-    imageWidth: 1440,
-    imageHeight: 960,
-    imageAlt:
-      'Caixa de entrada do Omni CRM AI em tema escuro: fila de conversas, histórico do atendimento, contexto do contato com oportunidades vinculadas e painel lateral de assistência de IA, com dados fictícios.',
+    images: [
+      {
+        src: '/uploads/projects/omni-crm-inbox.webp',
+        width: 1440,
+        height: 960,
+        caption: 'Caixa de entrada + Assistência de IA',
+        alt: 'Caixa de entrada do Omni CRM AI em tema escuro: fila de conversas, histórico do atendimento, contexto do contato com oportunidades vinculadas e painel lateral de assistência de IA, com dados fictícios.',
+      },
+      {
+        src: '/uploads/projects/omni-crm-dashboard.webp',
+        width: 1440,
+        height: 960,
+        caption: 'Indicadores e funil comercial',
+        alt: 'Visão geral do Omni CRM AI em tema escuro com métricas de atendimento, conversas abertas, valor em pipeline, gráfico de atendimentos por período e tempo médio de resposta.',
+      },
+      {
+        src: '/uploads/projects/omni-crm-pipeline.webp',
+        width: 1440,
+        height: 960,
+        caption: 'Pipeline comercial Kanban',
+        alt: 'Pipeline comercial do Omni CRM AI com oportunidades distribuídas entre Entrada, Qualificação, Proposta e Negociação, valores estimados e probabilidade de fechamento.',
+      },
+    ],
     name: 'Omni CRM AI — Atendimento Omnichannel e Pipeline com IA',
     desc: 'Solução B2B para equipes comerciais e de atendimento conduzirem conversas do primeiro contato ao fechamento em um único espaço multi-organização. Integra caixa de entrada omnichannel (WhatsApp e chat web incorporável), pipeline de oportunidades, base de conhecimento vetorial com pgvector e assistência de IA sob demanda para resumo de conversas e sugestão de respostas, com autenticação Better Auth e filas em Redis/BullMQ.',
     stack: 'NestJS · React · PostgreSQL · pgvector · Better Auth · Redis · BullMQ · Zod',
   },
   {
     id: 'clinicflow',
-    image: '/uploads/projects/clinicflow-painel.webp',
-    imageWidth: 1440,
-    imageHeight: 1000,
-    imageAlt:
-      'Painel do dia do ClinicFlow: consultas com estado e próximo passo, contadores de aguardando e atrasadas, sala de espera e retornos, com dados de demonstração.',
+    images: [
+      {
+        src: '/uploads/projects/clinicflow-painel.webp',
+        width: 1440,
+        height: 1000,
+        caption: 'Painel operacional do dia',
+        alt: 'Painel do dia do ClinicFlow: consultas com estado e próximo passo, contadores de aguardando e atrasadas, sala de espera e retornos, com dados de demonstração.',
+      },
+      {
+        src: '/uploads/projects/clinicflow-agenda.webp',
+        width: 1440,
+        height: 1000,
+        caption: 'Agenda multiprofissional',
+        alt: 'Agenda do ClinicFlow exibindo consultas por horário e profissional com status do ciclo de atendimento (em atendimento, aguardando, confirmada, agendada e concluída).',
+      },
+      {
+        src: '/uploads/projects/clinicflow-espera.webp',
+        width: 1440,
+        height: 1000,
+        caption: 'Sala de espera ativa',
+        alt: 'Sala de espera do ClinicFlow com fila por ordem de chegada, tempo de espera médio e individual em tempo real e ação direta para iniciar atendimento.',
+      },
+      {
+        src: '/uploads/projects/clinicflow-retornos.webp',
+        width: 1440,
+        height: 1000,
+        caption: 'Pendências e resgate de retornos',
+        alt: 'Tela de pendências e retornos do ClinicFlow com contadores de retornos a agendar, confirmações pendentes e faltas a resgatar.',
+      },
+    ],
     name: 'ClinicFlow — Gestão Operacional de Clínicas',
     desc: 'Solução ponta a ponta para eliminar o desalinhamento entre recepção, agenda e consultório: centraliza a operação diária com agenda multiprofissional livre de conflitos de horário, ciclo da consulta governado por máquina de estados testável, sala de espera ativa com eventos em tempo real (SSE), documentos clínicos em armazenamento compatível com S3 e funil automático para resgate de faltas e retornos.',
     stack: 'React · NestJS · Prisma · PostgreSQL · Redis · Amazon S3 · Turborepo',
@@ -149,22 +210,58 @@ export const projects: ProjectItem[] = [
   },
   {
     id: 'finflow',
-    image: '/uploads/projects/finflow-painel.webp',
-    imageWidth: 1440,
-    imageHeight: 960,
-    imageAlt:
-      'Painel financeiro do FinFlow em tema escuro: saldo geral, receitas, despesas, próximos vencimentos, fluxo de caixa mensal e distribuição por categoria, com dados de demonstração.',
+    images: [
+      {
+        src: '/uploads/projects/finflow-painel.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Visão geral e fluxo de caixa',
+        alt: 'Painel financeiro do FinFlow em tema escuro: saldo geral, receitas, despesas, próximos vencimentos, fluxo de caixa mensal e distribuição por categoria, com dados de demonstração.',
+      },
+      {
+        src: '/uploads/projects/finflow-extrato.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Extrato e exportação CSV/OFX',
+        alt: 'Tela de extrato do FinFlow em tema escuro com filtros por período, tipo, status, conta e categoria, lançamentos confirmados e agendados e botões de exportação CSV e OFX.',
+      },
+      {
+        src: '/uploads/projects/finflow-contas.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Contas, cartões e faturas',
+        alt: 'Tela de contas e cartões do FinFlow em tema escuro exibindo saldo consolidado por conta, cartões de crédito com limite utilizado, disponível e fatura aberta.',
+      },
+    ],
     name: 'FinFlow — Plataforma Financeira Multi-Interface com MCP',
-    desc: 'Plataforma de gestão financeira orientada a domínio (valores em centavos inteiros, faturas, parcelamentos, orçamentos e metas) onde uma única API NestJS com contratos Zod compartilhados alimenta quatro interfaces: painel web React, CLI, servidor MCP com 19 ferramentas para assistentes de IA e bot do Telegram com lançamentos rápidos, alertas de limite de orçamento e exportação CSV/OFX.',
+    desc: 'Plataforma de gestão financeira orientada a domínio (valores em centavos inteiros, faturas, parcelamentos, orçamentos e metas) onde uma única API NestJS com contratos Zod compartilhados alimenta quatro interfaces: painel web React, CLI, integração MCP com 19 ferramentas para assistentes de IA e bot do Telegram com lançamentos rápidos, alertas de limite de orçamento e exportação CSV/OFX.',
     stack: 'NestJS · React · MCP · Telegram API · Prisma · PostgreSQL · Zod · Turborepo',
   },
   {
     id: 'whatsapp-control-center',
-    image: '/uploads/projects/whatsapp-control-center.jpg',
-    imageWidth: 1440,
-    imageHeight: 960,
-    imageAlt:
-      'Editor de templates do WhatsApp Control Center com formulário e prévia da mensagem, em ambiente de demonstração.',
+    images: [
+      {
+        src: '/uploads/projects/wa-editor.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Editor de templates com prévia',
+        alt: 'Editor de templates do WhatsApp Control Center com formulário de categoria, variáveis e prévia fiel da mensagem no celular, em ambiente de demonstração.',
+      },
+      {
+        src: '/uploads/projects/wa-modelos.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Modelos sincronizados na Meta',
+        alt: 'Listagem de modelos de mensagem do WhatsApp Control Center sincronizados com a Meta, exibindo categoria, idioma, status de aprovação e índice de qualidade.',
+      },
+      {
+        src: '/uploads/projects/wa-webhooks.webp',
+        width: 2160,
+        height: 1440,
+        caption: 'Webhooks e diagnóstico',
+        alt: 'Painel de webhooks do WhatsApp Control Center com contadores de eventos nas últimas 24h, URL de retorno, token de verificação e campos recomendados da Meta.',
+      },
+    ],
     name: 'WhatsApp Control Center — Operação na API Oficial da Meta',
     desc: 'Central operacional sobre a WhatsApp Cloud API oficial para empresas conduzirem atendimento e disparos em volume sem depender de intervenção técnica. Reúne contas, números, editor de templates com prévia fiel no celular, diagnóstico claro de falhas de envio, webhooks em tempo real, credenciais criptografadas e controle de acesso por organização e perfil.',
     stack: 'React · NestJS · WhatsApp API · PostgreSQL · Prisma · TanStack Query',
@@ -172,11 +269,15 @@ export const projects: ProjectItem[] = [
   },
   {
     id: 'mapbox-vision',
-    image: '/uploads/projects/mapbox-vision.webp',
-    imageWidth: 1440,
-    imageHeight: 900,
-    imageAlt:
-      'Mapbox Vision: mapa do Brasil em tema escuro com agrupamentos de estações meteorológicas e inventário lateral de ativos com filtros, em base de demonstração.',
+    images: [
+      {
+        src: '/uploads/projects/mapbox-vision.webp',
+        width: 1600,
+        height: 1000,
+        caption: 'Mapa interativo e inventário de ativos',
+        alt: 'Mapbox Vision: mapa do Brasil em tema escuro com agrupamentos de estações meteorológicas e inventário lateral de ativos com filtros, em base de demonstração.',
+      },
+    ],
     name: 'Mapbox Vision — Inteligência Geoespacial com PostGIS',
     desc: 'Plataforma de análise territorial e cobertura de ativos: combina mapa interativo em Mapbox GL com consultas espaciais nativas no PostgreSQL/PostGIS (ST_Covers, ST_Intersects, ST_Intersection), contrato GeoJSON e cruzamento automatizado com setores censitários e dados socioeconômicos do IBGE para apoiar decisões de cobertura.',
     stack: 'React · Mapbox GL · NestJS · PostGIS · TypeORM',
@@ -184,12 +285,30 @@ export const projects: ProjectItem[] = [
   },
   {
     id: 'pc-remote-android',
-    image: '/uploads/projects/pc-remote-deck.webp',
     imageType: 'mobile',
-    imageWidth: 720,
-    imageHeight: 1600,
-    imageAlt:
-      'PC Remote Kotlin: painel de controles com atalhos de janelas, captura de tela, calculadora e bloqueio do computador.',
+    images: [
+      {
+        src: '/uploads/projects/pc-remote-deck.webp',
+        width: 720,
+        height: 1600,
+        caption: 'Deck de controles e atalhos',
+        alt: 'PC Remote Kotlin: painel de controles com atalhos de janelas, captura de tela, calculadora e bloqueio do computador.',
+      },
+      {
+        src: '/uploads/projects/pc-remote-media.webp',
+        width: 720,
+        height: 1600,
+        caption: 'Mídia e volume do PC',
+        alt: 'PC Remote Kotlin: tela de controle de mídia com reprodução, faixa atual, pesquisa no YouTube e controle preciso de volume do computador.',
+      },
+      {
+        src: '/uploads/projects/pc-remote-transfer.webp',
+        width: 720,
+        height: 1600,
+        caption: 'Arquivos e área de transferência',
+        alt: 'PC Remote Kotlin: tela de transferência de arquivos e sincronização em tempo real da área de transferência entre Android e computador.',
+      },
+    ],
     name: 'PC Remote — Android Nativo e Companion Desktop',
     desc: 'Ecossistema de controle remoto local sem dependência de nuvem: aplicativo Android nativo em Kotlin conectado pela LAN com TLS fixado ao companion desktop em Rust e Tauri, oferecendo comandos de mídia e janelas, transferência de arquivos e sincronização de área de transferência.',
     stack: 'Kotlin · Android Views · TLS · Rust · Tauri',
@@ -245,9 +364,9 @@ export const personalInfo = {
    * de áreas e perdia o "gosto de construir", que é o que diferencia.
    */
   shortBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e participar das decisões de produto, atuando em arquitetura, infraestrutura e desenvolvimento. Hoje construo assistentes, agentes de IA e servidores MCP que rodam em produção.',
+    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e participar das decisões de produto, atuando em arquitetura, infraestrutura e desenvolvimento. Hoje trabalho com engenharia de IA aplicada, integrando assistentes e agentes autônomos a sistemas reais em produção.',
   fullBio:
-    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto. Atuo em todas as fases do ciclo: arquitetura, infraestrutura e desenvolvimento. Hoje trabalho com engenharia de IA aplicada, entregando assistentes de IA, agentes e integrações MCP conectados a sistemas reais em produção.',
+    'Desenvolvedor Full Stack com 3 anos de experiência. Gosto de construir e de entrar na decisão do produto. Atuo em todas as fases do ciclo: arquitetura, infraestrutura e desenvolvimento. Hoje trabalho com engenharia de IA aplicada, integrando assistentes e agentes autônomos a sistemas críticos em produção.',
   photoUrl: '/uploads/backback.webp',
   // Fallback real para navegadores sem WebP (antes apontava para um
   // arquivo byte a byte idêntico ao principal, então nunca serviu de nada).

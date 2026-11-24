@@ -101,9 +101,16 @@ Nova apresentação publicada em [danielharrisonlf.vercel.app](https://danielhar
 - **ClinicFlow**, **WhatsApp Control Center**, **Mapbox Vision** e **PC Remote**: mantidos com textos revisados para enfatizar problema de negócio, operação real e arquitetura entregue; o projeto pessoal Fio foi retirado da vitrine para priorizar soluções de impacto operacional e IA aplicada/MCP.
 
 ### Novas capturas reais (nenhuma imagem gerada por IA)
-- `public/uploads/projects/gestao-operacional-mcp.webp` (1440×960, WebP): captura real do frontend compilado `C:/Users/daniellima/code/projetos/axial/apps/web/dist` na rota `#/mcp` (catálogo de ferramentas MCP e permissões RBAC), com dados de demonstração do próprio app.
-- `public/uploads/projects/omni-crm-inbox.webp` (1440×960, WebP): convertida diretamente da captura real do produto `C:/Users/daniellima/code/projetos/omni-crm-ai/docs/design/product-inbox-dark.png` (regerada pela suíte E2E do repositório com dados fictícios).
-- `public/uploads/projects/finflow-painel.webp` (1440×960, WebP): captura real do frontend compilado `C:/Users/daniellima/code/projetos/finflow/apps/web/dist` em tema escuro, servindo as fixtures determinísticas da suíte E2E (`apps/web/e2e/mocks.ts`).
+- **Plataforma de Gestão Operacional com Assistente de IA via MCP** (`ops-dashboard.webp`, `ops-kanban.webp`, `ops-mcp.webp` — 2160×1440, WebP q94): capturas 2× Retina (2880×1920 redimensionadas com Lanczos) do frontend compilado `C:/Users/daniellima/code/projetos/axial/apps/web/dist` em tema escuro (`#/dashboard`, `#/board` e `#/mcp`), com dados de demonstração do próprio app.
+- **Omni CRM AI** (`omni-crm-inbox.webp`, `omni-crm-dashboard.webp`, `omni-crm-pipeline.webp` — 1440×960, WebP q96): convertidas diretamente das capturas reais da suíte E2E em `C:/Users/daniellima/code/projetos/omni-crm-ai/docs/design/` (`product-inbox-dark.png`, `product-dashboard-dark.png`, `product-pipeline-light.png`).
+- **ClinicFlow** (`clinicflow-painel.webp`, `clinicflow-agenda.webp`, `clinicflow-espera.webp`, `clinicflow-retornos.webp` — 1440×1000, WebP): capturas reais copiadas de `C:/Users/daniellima/Documents/backend/apps/web/public/marketing/`.
+- **FinFlow** (`finflow-painel.webp`, `finflow-extrato.webp`, `finflow-contas.webp` — 2160×1440, WebP q94): capturas 2× Retina em tema escuro do frontend compilado `C:/Users/daniellima/code/projetos/finflow/apps/web/dist`, alimentado pelas fixtures determinísticas de `apps/web/e2e/mocks.ts`.
+- **WhatsApp Control Center** (`wa-editor.webp`, `wa-modelos.webp`, `wa-webhooks.webp` — 2160×1440, WebP q94): capturas 2× Retina do frontend compilado `C:/Users/daniellima/Downloads/whatsapp api/apps/www/dist`, alimentado pelas respostas sanitizadas de `output/pdf/get-endpoints-test-evidence.json`.
+- **Mapbox Vision** (`mapbox-vision.webp` — 1600×1000, WebP q95): reexportada em alta qualidade a partir da captura original `output/mapbox-capture/mapbox-raw.png`.
+- **PC Remote** (`pc-remote-deck.webp`, `pc-remote-media.webp`, `pc-remote-transfer.webp` — 720×1600, WebP): capturas reais do app Android Kotlin copiadas de `C:/Users/daniellima/Documents/desktop app/pc-remote-landing-v2/public/screenshots/`.
+
+### Carrossel de projetos e visualizador
+- `ProjectsSection.tsx` e `ProjectImageViewer.tsx`: implementado carrossel suave por crossfade com barra dedicada abaixo da captura (contador, legenda da tela, indicadores clicáveis, setas anterior/próxima e suporte a swipe no mobile), além de navegação por setas e teclado (`←`/`→`) no modal de visualização em tela cheia.
 
 ### Ícones e infraestrutura
 - `TechIcon.tsx`: adicionados ícones dedicados para Fastify, Zod, Better Auth, OAuth 2.1, Flyway, pgvector, BullMQ, Assistentes de IA, Kotlin, Android, Rust, Tauri e TLS.
